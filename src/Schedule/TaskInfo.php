@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Messenger\Monitor\Schedule;
 
+use Symfony\Component\Scheduler\Generator\MessageContext;
 use Symfony\Component\Scheduler\RecurringMessage;
 use Zenstruck\Messenger\Monitor\History\Snapshot;
 use Zenstruck\Messenger\Monitor\History\Specification;
@@ -51,7 +52,21 @@ final class TaskInfo
 
     public function message(): MessageInfo
     {
-        return new MessageInfo($this->task->getMessage());
+        // backwards compatibility with symfony/scheduler 6.3
+        if (method_exists($this->task, 'getMessage')) {
+            return new MessageInfo($this->task->getMessage());
+        }
+
+        $context = new MessageContext(
+            $this->schedule->name(),
+            $this->task->getId(),
+            $this->task->getTrigger(),
+            new \DateTimeImmutable(),
+        );
+
+        $messages = $this->task->getMessages($context);
+
+        return new MessageInfo($messages[0]);
     }
 
     public function trigger(): TriggerInfo
