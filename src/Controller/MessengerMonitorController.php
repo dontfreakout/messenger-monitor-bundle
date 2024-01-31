@@ -20,6 +20,7 @@ use Symfony\Component\Messenger\Message\RedispatchMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Scheduler\Generator\MessageContext;
 use Symfony\Component\Scheduler\Trigger\CronExpressionTrigger;
 use Symfony\Component\Scheduler\Trigger\TriggerInterface;
 use Zenstruck\Messenger\Monitor\History\Period;
@@ -174,7 +175,15 @@ abstract class MessengerMonitorController extends AbstractController
         }
 
         $task = $schedules->get($name)->task($id);
-        $message = $task->get()->getMessage();
+
+        $context = new MessageContext(
+            $schedules->get($name)->name(),
+            $task->id(),
+            $task->trigger()->get(),
+            new \DateTimeImmutable(),
+        );
+
+        $message = $task->get()->getMessages($context)[0] ?? null;
 
         if ($message instanceof RedispatchMessage) {
             $message = $message->envelope;
