@@ -50,11 +50,15 @@ final class TaskInfo
         return $this->task->getId();
     }
 
-    public function message(): MessageInfo
+    /**
+     * @return MessageInfo[]
+     */
+    public function messages(): array
     {
         // backwards compatibility with symfony/scheduler 6.3
+        // @phpstan-ignore-next-line
         if (method_exists($this->task, 'getMessage')) {
-            return new MessageInfo($this->task->getMessage());
+            return [new MessageInfo($this->task->getMessage())];
         }
 
         $context = new MessageContext(
@@ -66,7 +70,12 @@ final class TaskInfo
 
         $messages = $this->task->getMessages($context);
 
-        return new MessageInfo($messages[0]);
+        $messagesInfo = [];
+        foreach($messages as $message) {
+            $messagesInfo[] = new MessageInfo($message);
+        }
+
+        return $messagesInfo;
     }
 
     public function trigger(): TriggerInfo
