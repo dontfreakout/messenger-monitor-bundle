@@ -202,6 +202,13 @@ bin/console messenger:monitor:schedule:purge --remove-orphans
 ## User Interface
 
 > [!NOTE]
+> `symfony/form` (`composer require symfony/form`) is required for the UI.
+
+> [!NOTE]
+> If using `symfony/scheduler` and the UI, `symfony/security-csrf` (`composer require symfony/security-csrf`) is required.
+> CSRF protection and sessions must also be enabled in your `config/packages/framework.yaml`.
+
+> [!NOTE]
 > [Storage](#storage) must be configured for this feature.
 
 Create a controller that extends `Zenstruck\Messenger\Monitor\Controller\MessengerMonitorController`
