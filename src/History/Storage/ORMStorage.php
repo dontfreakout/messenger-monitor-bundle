@@ -11,9 +11,9 @@
 
 namespace Zenstruck\Messenger\Monitor\History\Storage;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Messenger\Envelope;
 use Zenstruck\Collection;
@@ -38,7 +38,7 @@ final class ORMStorage implements Storage
     /**
      * @param class-string<T> $entityClass
      */
-    public function __construct(private Registry $registry, private string $entityClass)
+    public function __construct(private ManagerRegistry $registry, private string $entityClass)
     {
     }
 
