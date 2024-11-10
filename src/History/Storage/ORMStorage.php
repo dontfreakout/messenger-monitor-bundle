@@ -85,7 +85,7 @@ final class ORMStorage implements Storage
             ->orderBy('m.type', 'ASC')
         ;
 
-        return (new EntityResult($qb))->asString();
+        return (new EntityResult($qb))->asString(); // @phpstan-ignore-line
     }
 
     public function averageWaitTime(Specification $specification): ?float

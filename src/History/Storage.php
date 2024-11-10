@@ -41,7 +41,7 @@ interface Storage
     public function count(Specification $specification): int;
 
     /**
-     * @return Collection<int,string>
+     * @return Collection<int,class-string>
      */
     public function availableMessageTypes(Specification $specification): Collection;
 }

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the zenstruck/messenger-monitor-bundle package.
  *
@@ -14,19 +12,22 @@ declare(strict_types=1);
 namespace Zenstruck\Messenger\Monitor\History;
 
 use Zenstruck\Collection;
+use Zenstruck\Messenger\Monitor\Type;
 
 final class Filters
 {
-    /** @var Collection<int, string> */
+    /** @var Collection<int,Type> */
     private Collection $availableMessageTypes;
 
     public function __construct(private readonly Storage $storage, private readonly Specification $specification)
     {
     }
 
-    /** @return Collection<int, string> */
+    /** @return Collection<int,Type> */
     public function availableMessageTypes(): Collection
     {
-        return $this->availableMessageTypes ??= $this->storage->availableMessageTypes($this->specification)->eager();
+        return $this->availableMessageTypes ??= $this->storage->availableMessageTypes($this->specification)->eager()->map(
+            static fn(string $type) => new Type($type)
+        );
     }
 }
