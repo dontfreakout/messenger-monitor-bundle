@@ -84,9 +84,6 @@ abstract class ProcessedMessage
         return $this->attempt;
     }
 
-    /**
-     * @return Type
-     */
     final public function type(): Type
     {
         return new Type($this->type);

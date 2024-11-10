@@ -46,9 +46,6 @@ final class MessageInfo
         return [];
     }
 
-    /**
-     * @return Type
-     */
     public function type(): Type
     {
         return new Type(self::unwrap($this->object));

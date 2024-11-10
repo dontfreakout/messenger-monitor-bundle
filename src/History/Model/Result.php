@@ -39,9 +39,6 @@ final class Result
         return isset($this->data['exception']);
     }
 
-    /**
-     * @return Type|null
-     */
     public function handler(): ?Type
     {
         if (!isset($this->data['handler'])) {

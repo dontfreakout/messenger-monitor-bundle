@@ -36,9 +36,6 @@ final class QueuedMessage
         return $this->envelope->last(TransportMessageIdStamp::class)?->getId();
     }
 
-    /**
-     * @return Type
-     */
     public function message(): Type
     {
         return new Type(
