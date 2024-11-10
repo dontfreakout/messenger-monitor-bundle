@@ -37,7 +37,7 @@ final class QueuedMessage
     }
 
     /**
-     * @return Type<object>
+     * @return Type
      */
     public function message(): Type
     {

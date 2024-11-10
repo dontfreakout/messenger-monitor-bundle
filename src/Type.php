@@ -14,7 +14,7 @@ namespace Zenstruck\Messenger\Monitor;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @template T of object
+ * @template T of object = object
  */
 final class Type implements \Stringable
 {

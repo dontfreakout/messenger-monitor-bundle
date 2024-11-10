@@ -47,7 +47,7 @@ final class MessageInfo
     }
 
     /**
-     * @return Type<object>
+     * @return Type
      */
     public function type(): Type
     {

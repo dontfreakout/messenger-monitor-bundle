@@ -76,7 +76,7 @@
 
             <div class="btn-group me-2" role="group">
                 {% set current_type = app.request.query.get('type', 'All') %}
-                <button type="button" class="btn {{ current_type != 'All' ? 'btn-outline-primary' : 'btn-light' }} dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" class="btn {{ current_type != 'All' ? 'btn-outline-primary' : 'btn-light' }} dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" {% if current_type == 'All' and not filters.availableMessageTypes|length %}disabled{% endif %}>
                     <small class="text-body-secondary">Message type:</small> {{ current_type }}
                 </button>
                 <ul class="dropdown-menu">
@@ -85,9 +85,9 @@
                     {% endif %}
 
                     {% for type in filters.availableMessageTypes %}
-                        {% if type != current_type %}
-                            <li><a class="dropdown-item" href="{{ path(app.current_route, app.request.query.all|merge({type: type})) }}">
-                                    {{ type | split('\\') | last }} <br>
+                        {% if type.class != current_type %}
+                            <li><a class="dropdown-item" href="{{ path(app.current_route, app.request.query.all|merge({type: type.class})) }}">
+                                    {{ type.shortName }} <br>
                                     <small class="text-secondary">{{ type }}</small>
                                 </a>
                             </li>
