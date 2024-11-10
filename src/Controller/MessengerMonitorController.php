@@ -193,7 +193,7 @@ abstract class MessengerMonitorController extends AbstractController
         Schedules $schedules,
         MessageBusInterface $bus,
     ): Response {
-        if (!$this->isCsrfTokenValid(\sprintf('trigger-%s-%s', $id, $transport), $request->headers->get('X-CSRF-Token'))) {
+        if (!$this->isCsrfTokenValid(\sprintf('trigger-%s-%s', $id, $transport), $request->request->getString('_token'))) {
             throw new HttpException(419, 'Invalid CSRF token.');
         }
 
@@ -218,6 +218,8 @@ abstract class MessengerMonitorController extends AbstractController
             ]);
         }
 
-        return new Response(null, 204);
+        $this->addFlash('success', \sprintf('Task "%s" triggered on "%s" transport.', $task->id(), $transport));
+
+        return $this->redirectToRoute('zenstruck_messenger_monitor_schedule', ['name' => $name]);
     }
 }
