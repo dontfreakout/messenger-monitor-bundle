@@ -40,7 +40,7 @@ final class Result
     }
 
     /**
-     * @return Type<object>|null
+     * @return Type|null
      */
     public function handler(): ?Type
     {

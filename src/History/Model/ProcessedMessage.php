@@ -85,7 +85,7 @@ abstract class ProcessedMessage
     }
 
     /**
-     * @return Type<object>
+     * @return Type
      */
     final public function type(): Type
     {
