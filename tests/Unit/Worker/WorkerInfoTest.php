@@ -9,14 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\Worker;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\Worker;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\Clock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Messenger\WorkerMetadata;
 use Zenstruck\Messenger\Monitor\Worker\WorkerInfo;
-
 use function Symfony\Component\Clock\now;
 
 /**

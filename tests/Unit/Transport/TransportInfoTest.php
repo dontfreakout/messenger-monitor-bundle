@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\Transport;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\Transport;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\TransportInterface;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\CountableTransport;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\ListableTransport;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\CountableTransport;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\ListableTransport;
 use Zenstruck\Messenger\Monitor\Transport\QueuedMessage;
 use Zenstruck\Messenger\Monitor\Transport\TransportInfo;
 use Zenstruck\Messenger\Monitor\Worker\WorkerCache;

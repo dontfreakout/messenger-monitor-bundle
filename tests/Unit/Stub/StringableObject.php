@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\Fixture\Stub;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\Stub;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

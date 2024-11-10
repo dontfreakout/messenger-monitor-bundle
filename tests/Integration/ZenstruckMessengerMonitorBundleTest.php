@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests;
+namespace Zenstruck\Messenger\Monitor\Tests\Integration;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Console\Test\InteractsWithConsole;

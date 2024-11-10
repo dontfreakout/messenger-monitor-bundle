@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\Command;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\Command;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -22,9 +22,9 @@ use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Messenger\Worker;
 use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\Messenger\Monitor\Command\MonitorCommand;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\CountableListableTransport;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\CountableTransport;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\ListableTransport;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\CountableListableTransport;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\CountableTransport;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\ListableTransport;
 use Zenstruck\Messenger\Monitor\Transports;
 use Zenstruck\Messenger\Monitor\Worker\WorkerCache;
 use Zenstruck\Messenger\Monitor\Worker\WorkerListener;

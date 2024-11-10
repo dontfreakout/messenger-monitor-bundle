@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\History;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\History;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
