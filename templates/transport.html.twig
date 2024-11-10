@@ -96,11 +96,17 @@
                                             {% endif %}
                                         </td>
                                     {% endif %}
-                                    <td>
+                                    <td class="text-end">
                                         <a href="{{ path('zenstruck_messenger_monitor_transport_remove', {name: transport.name, id: queued.id}) }}" class="post-link btn btn-sm btn-outline-danger" data-confirm="Are you sure?" data-token="{{ csrf_token(['remove', queued.id, transport.name]|join('-')) }}">
                                             <svg fill="currentcolor" height="1em" width="1em" class="me-1 align-text-bottom" role="img" aria-label="Info:"><use xlink:href="#trash-icon"/></svg>
                                             Remove
                                         </a>
+                                        {% if transport.isFailure %}
+                                            <a href="{{ path('zenstruck_messenger_monitor_transport_retry', {name: transport.name, id: queued.id}) }}" class="post-link btn btn-sm btn-outline-secondary" data-token="{{ csrf_token(['retry', queued.id, transport.name]|join('-')) }}">
+                                                <svg fill="currentcolor" height="1em" width="1em" class="me-1 align-text-bottom" role="img" aria-label="Info:"><use xlink:href="#refresh-icon"/></svg>
+                                                Retry
+                                            </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
