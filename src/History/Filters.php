@@ -23,7 +23,9 @@ final class Filters
     {
     }
 
-    /** @return Collection<int,Type> */
+    /**
+     * @return Collection<int,Type>
+     */
     public function availableMessageTypes(): Collection
     {
         return $this->availableMessageTypes ??= $this->storage->availableMessageTypes($this->specification)->eager()->map(
