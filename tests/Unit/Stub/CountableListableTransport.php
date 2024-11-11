@@ -9,20 +9,31 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\Fixture\Stub;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\Stub;
 
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Transport\Receiver\ListableReceiverInterface;
 use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class CountableTransport implements TransportInterface, MessageCountAwareInterface
+final class CountableListableTransport implements TransportInterface, ListableReceiverInterface, MessageCountAwareInterface
 {
     public function getMessageCount(): int
     {
         return 0;
+    }
+
+    public function all(?int $limit = null): iterable
+    {
+        return [];
+    }
+
+    public function find(mixed $id): ?Envelope
+    {
+        return null;
     }
 
     public function get(): iterable

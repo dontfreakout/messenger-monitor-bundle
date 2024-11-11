@@ -3,7 +3,7 @@
 <!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
          failOnRisky="true"
          failOnWarning="true"
@@ -13,6 +13,7 @@
         <server name="KERNEL_CLASS" value="Zenstruck\Messenger\Monitor\Tests\Fixture\TestKernel" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0&amp;max[direct]=0&amp;quiet[]=indirect&amp;quiet[]=other"/>
+        <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/data.db"/>
     </php>
 
     <testsuites>

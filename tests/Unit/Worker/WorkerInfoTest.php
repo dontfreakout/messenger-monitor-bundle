@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\Worker;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\Worker;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\Clock;

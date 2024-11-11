@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests\History\Model;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit\History\Model;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\Clock;
@@ -21,7 +21,7 @@ use Zenstruck\Messenger\Monitor\History\Model\Results;
 use Zenstruck\Messenger\Monitor\Stamp\DescriptionStamp;
 use Zenstruck\Messenger\Monitor\Stamp\MonitorStamp;
 use Zenstruck\Messenger\Monitor\Stamp\TagStamp;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\StringableObject;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\StringableObject;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

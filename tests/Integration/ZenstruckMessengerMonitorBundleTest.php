@@ -9,10 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests;
+namespace Zenstruck\Messenger\Monitor\Tests\Integration;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Console\Test\InteractsWithConsole;
+use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Messenger\Monitor\Tests\Fixture\TestService;
 
 /**
@@ -20,7 +21,7 @@ use Zenstruck\Messenger\Monitor\Tests\Fixture\TestService;
  */
 final class ZenstruckMessengerMonitorBundleTest extends KernelTestCase
 {
-    use InteractsWithConsole;
+    use InteractsWithConsole, ResetDatabase;
 
     /**
      * @test

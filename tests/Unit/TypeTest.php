@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\Tests;
+namespace Zenstruck\Messenger\Monitor\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Messenger\Monitor\History\Storage;
-use Zenstruck\Messenger\Monitor\Tests\Fixture\Stub\StringableObject;
+use Zenstruck\Messenger\Monitor\Tests\Unit\Stub\StringableObject;
 use Zenstruck\Messenger\Monitor\Type;
 
 /**
