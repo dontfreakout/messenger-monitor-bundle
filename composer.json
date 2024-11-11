@@ -36,7 +36,8 @@
         "symfony/security-bundle": "^6.4|^7.0",
         "symfony/ux-live-component": "^2.10",
         "symfony/var-dumper": "^6.4|^7.0",
-        "zenstruck/console-test": "^1.5"
+        "zenstruck/console-test": "^1.5",
+        "zenstruck/foundry": "^2.2"
     },
     "suggest": {
         "knplabs/knp-time-bundle": "For human readable timestamps and durations on your dashboard.",

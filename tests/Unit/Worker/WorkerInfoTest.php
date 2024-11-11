@@ -16,6 +16,7 @@ use Symfony\Component\Clock\Clock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Messenger\WorkerMetadata;
 use Zenstruck\Messenger\Monitor\Worker\WorkerInfo;
+
 use function Symfony\Component\Clock\now;
 
 /**

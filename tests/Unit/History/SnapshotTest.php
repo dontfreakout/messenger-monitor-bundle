@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Zenstruck\Messenger\Monitor\History\Snapshot;
 use Zenstruck\Messenger\Monitor\History\Specification;
 use Zenstruck\Messenger\Monitor\History\Storage;
+
 use function Zenstruck\collect;
 
 /**
