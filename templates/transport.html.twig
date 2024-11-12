@@ -59,6 +59,7 @@
                             {% if transport.isFailure %}
                                 <th>Exception</th>
                             {% endif %}
+                            <th>&nbsp;</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -93,9 +94,14 @@
                                             {% else %}
                                                 <em class="text-secondary">n/a</em>
                                             {% endif %}
-
                                         </td>
                                     {% endif %}
+                                    <td>
+                                        <a href="{{ path('zenstruck_messenger_monitor_transport_remove', {name: transport.name, id: queued.id}) }}" class="post-link btn btn-sm btn-outline-danger" data-confirm="Are you sure?" data-token="{{ csrf_token(['remove', queued.id, transport.name]|join('-')) }}">
+                                            <svg fill="currentcolor" height="1em" width="1em" class="me-1 align-text-bottom" role="img" aria-label="Info:"><use xlink:href="#trash-icon"/></svg>
+                                            Remove
+                                        </a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

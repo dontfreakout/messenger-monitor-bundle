@@ -166,7 +166,7 @@
                                         </button>
                                         <ul class="dropdown-menu" data-boundary="viewport">
                                             {% for t in transports.names %}
-                                                <li><a class="dropdown-item ajax-toast-trigger" data-success="Successfully triggered scheduled task" data-fail="Failed to trigger scheduled task" data-token="{{ csrf_token(['trigger', task.id, t]|join('-')) }}" href="{{ path('zenstruck_messenger_monitor_schedule_trigger', {name: schedule.name, id: task.id, transport: t}) }}">{{ t }}</a></li>
+                                                <li><a class="dropdown-item post-link" data-token="{{ csrf_token(['trigger', task.id, t]|join('-')) }}" href="{{ path('zenstruck_messenger_monitor_schedule_trigger', {name: schedule.name, id: task.id, transport: t}) }}">{{ t }}</a></li>
                                             {% endfor %}
                                         </ul>
                                     </div>

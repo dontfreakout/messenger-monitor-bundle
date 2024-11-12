@@ -148,6 +148,27 @@ abstract class MessengerMonitorController extends AbstractController
         ]);
     }
 
+    #[Route('/transport/{name}/{id}/remove', name: 'zenstruck_messenger_monitor_transport_remove', methods: 'POST')]
+    public function removeTransportMessage(
+        string $name,
+        string $id,
+        Request $request,
+        ViewHelper $helper,
+    ): Response {
+        if (!$this->isCsrfTokenValid(\sprintf('remove-%s-%s', $id, $name), $request->request->getString('_token'))) {
+            throw new HttpException(419, 'Invalid CSRF token.');
+        }
+
+        $transport = $helper->transports->get($name);
+        $message = $transport->find($id) ?? throw $this->createNotFoundException('Message not found.');
+
+        $transport->get()->reject($message->envelope());
+
+        $this->addFlash('success', \sprintf('Message "%s" removed from transport "%s".', $message->message()->shortName(), $name));
+
+        return $this->redirectToRoute('zenstruck_messenger_monitor_transport', ['name' => $name]);
+    }
+
     #[Route('/schedule/{name}', name: 'zenstruck_messenger_monitor_schedule', defaults: ['name' => null])]
     public function schedules(
         ViewHelper $helper,
@@ -185,7 +206,7 @@ abstract class MessengerMonitorController extends AbstractController
     }
 
     #[Route('/schedules/{name}/trigger/{id}/{transport}', methods: 'POST', name: 'zenstruck_messenger_monitor_schedule_trigger')]
-    public function triggerTask(
+    public function triggerScheduleTask(
         string $name,
         string $id,
         string $transport,
@@ -193,7 +214,7 @@ abstract class MessengerMonitorController extends AbstractController
         Schedules $schedules,
         MessageBusInterface $bus,
     ): Response {
-        if (!$this->isCsrfTokenValid(\sprintf('trigger-%s-%s', $id, $transport), $request->headers->get('X-CSRF-Token'))) {
+        if (!$this->isCsrfTokenValid(\sprintf('trigger-%s-%s', $id, $transport), $request->request->getString('_token'))) {
             throw new HttpException(419, 'Invalid CSRF token.');
         }
 
@@ -218,6 +239,8 @@ abstract class MessengerMonitorController extends AbstractController
             ]);
         }
 
-        return new Response(null, 204);
+        $this->addFlash('success', \sprintf('Task "%s" triggered on "%s" transport.', $task->id(), $transport));
+
+        return $this->redirectToRoute('zenstruck_messenger_monitor_schedule', ['name' => $name]);
     }
 }

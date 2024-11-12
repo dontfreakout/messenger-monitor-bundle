@@ -64,38 +64,32 @@
                     });
                 });
 
-                document.querySelectorAll('.ajax-toast-trigger').forEach(element => {
+                document.querySelectorAll('.toast').forEach(element => {
+                    (new bootstrap.Toast(element)).show();
+                });
+
+                document.querySelectorAll('.post-link').forEach(element => {
                     element.addEventListener('click', (event) => {
                         event.preventDefault();
 
-                        fetch(element.getAttribute('href'), {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-Token': element.dataset.token,
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                            .then(response => {
-                                const el = document.getElementById('trigger-toast').cloneNode(true);
+                        if (element.dataset.confirm && !confirm(element.dataset.confirm)) {
+                            return;
+                        }
 
-                                el.classList.remove('d-none');
-                                el.classList.add('toast');
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = element.getAttribute('href');
 
-                                if (response.ok) {
-                                    el.classList.add('text-bg-success');
-                                    el.querySelector('.toast-body').innerHTML = element.dataset.success;
-                                } else {
-                                    el.classList.add('text-bg-danger');
-                                    el.querySelector('.toast-body').innerHTML = element.dataset.failure;
-                                }
+                        if (element.dataset.token) {
+                            const token = document.createElement('input');
+                            token.type = 'hidden';
+                            token.name = '_token';
+                            token.value = element.dataset.token;
+                            form.appendChild(token);
+                        }
 
-                                document.getElementById('toast-container').appendChild(el);
-
-                                const toast = new bootstrap.Toast(el);
-
-                                toast.show();
-                            })
-                            .catch(error => console.error('Error:', error));
+                        document.body.appendChild(form);
+                        form.submit();
                     });
                 });
             });
@@ -237,6 +231,10 @@
         <symbol id="search-icon" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
         </symbol>
+        <symbol id="trash-icon" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+        </symbol>
         <symbol id="play-icon" viewBox="0 0 16 16">
             <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
         </symbol>
@@ -253,14 +251,18 @@
         </div>
     </div>
 {% endblock %}
-{% block toast_template %}
-    <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3 mt-5"></div>
-    <div id="trigger-toast" class="d-none" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="toast-container position-fixed top-0 end-0 p-3 mt-2">
+            <div class="toast text-bg-{{ label }}" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">{{ message }}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
-    </div>
-{% endblock %}
+    {% endfor %}
+{% endfor %}
 </body>
 </html>
