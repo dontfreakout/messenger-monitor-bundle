@@ -55,6 +55,7 @@ return static function (ContainerConfigurator $container): void {
                 service('zenstruck_messenger_monitor.history.storage')->nullOnInvalid(),
                 service('zenstruck_messenger_monitor.schedules')->nullOnInvalid(),
                 service('time.datetime_formatter')->nullOnInvalid(),
+                service('security.csrf.token_manager')->nullOnInvalid(),
             ])
             ->alias(ViewHelper::class, 'zenstruck_messenger_monitor.view_helper')
     ;
