@@ -18,6 +18,7 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Messenger\Envelope;
 use Zenstruck\Collection;
 use Zenstruck\Collection\Doctrine\ORM\EntityResult;
+use Zenstruck\Messenger\Monitor\History\Model\MessageTypeMetric;
 use Zenstruck\Messenger\Monitor\History\Model\ProcessedMessage;
 use Zenstruck\Messenger\Monitor\History\Model\Results;
 use Zenstruck\Messenger\Monitor\History\Specification;
@@ -55,6 +56,34 @@ final class ORMStorage implements Storage
     public function purge(Specification $specification): int
     {
         return $this->queryBuilderFor($specification, order: false)->delete()->getQuery()->execute();
+    }
+
+    public function perMessageTypeMetrics(Specification $specification): Collection
+    {
+        $qb = $this->queryBuilderFor($specification->ignoreMessageType(), false)
+            ->select('m.type')
+            ->addSelect('COUNT(m.type) as total_count')
+            ->addSelect('COUNT(m.failureType) as failure_count')
+            ->addSelect('AVG(m.waitTime) as avg_wait_time')
+            ->addSelect('AVG(m.handleTime) as avg_handling_time')
+            ->groupBy('m.type')
+        ;
+
+        $totalSeconds = $specification->snapshot($this)->totalSeconds();
+
+        return (new EntityResult($qb))
+            ->as(function(array $data) use ($totalSeconds) {
+                return new MessageTypeMetric(
+                    $data['type'],
+                    $data['total_count'],
+                    $data['failure_count'],
+                    (float) $data['avg_wait_time'],
+                    (float) $data['avg_handling_time'],
+                    $totalSeconds,
+                );
+            })
+            ->eager() // bug in zenstruck/collection: https://github.com/zenstruck/collection/issues/47
+        ;
     }
 
     public function save(Envelope $envelope, Results $results, ?\Throwable $exception = null): void
