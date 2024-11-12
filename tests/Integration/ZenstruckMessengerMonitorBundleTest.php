@@ -12,8 +12,11 @@
 namespace Zenstruck\Messenger\Monitor\Tests\Integration;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\Serializer\Serializer;
 use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Messenger\Monitor\Stamp\MonitorStamp;
 use Zenstruck\Messenger\Monitor\Tests\Fixture\TestService;
 
 /**
@@ -21,7 +24,7 @@ use Zenstruck\Messenger\Monitor\Tests\Fixture\TestService;
  */
 final class ZenstruckMessengerMonitorBundleTest extends KernelTestCase
 {
-    use InteractsWithConsole, ResetDatabase;
+    use InteractsWithConsole, ResetDatabase, ClockSensitiveTrait;
 
     /**
      * @test
@@ -46,5 +49,31 @@ final class ZenstruckMessengerMonitorBundleTest extends KernelTestCase
             ->assertOutputContains('[!] No workers running.')
             ->assertOutputContains('async   n/a')
         ;
+    }
+
+    /**
+     * @test
+     */
+    public function serialize_and_unserialize_monitor_stamp(): void
+    {
+        $now = self::mockTime(new \DateTimeImmutable('2024-11-11'));
+
+        /** @var Serializer $serializer */
+        $serializer = self::getContainer()->get('serializer');
+        $monitorStamp = new MonitorStamp($now->now());
+
+        $this->assertEquals($monitorStamp, $serializer->deserialize($serializer->serialize($monitorStamp, 'json'), MonitorStamp::class, 'json'));
+
+        $now->sleep(2);
+
+        $monitorStamp = $monitorStamp->markReceived('async');
+
+        $this->assertEquals($monitorStamp, $serializer->deserialize($serializer->serialize($monitorStamp, 'json'), MonitorStamp::class, 'json'));
+
+        $now->sleep(3);
+
+        $monitorStamp = $monitorStamp->markFinished();
+
+        $this->assertEquals($monitorStamp, $serializer->deserialize($serializer->serialize($monitorStamp, 'json'), MonitorStamp::class, 'json'));
     }
 }
