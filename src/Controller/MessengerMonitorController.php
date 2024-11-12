@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Message\RedispatchMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\SentToFailureTransportStamp;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Scheduler\Generator\MessageContext;
@@ -165,6 +166,33 @@ abstract class MessengerMonitorController extends AbstractController
         $transport->get()->reject($message->envelope());
 
         $this->addFlash('success', \sprintf('Message "%s" removed from transport "%s".', $message->message()->shortName(), $name));
+
+        return $this->redirectToRoute('zenstruck_messenger_monitor_transport', ['name' => $name]);
+    }
+
+    #[Route('/transport/{name}/{id}/retry', name: 'zenstruck_messenger_monitor_transport_retry', methods: 'POST')]
+    public function retryFailedMessage(
+        string $name,
+        string $id,
+        Request $request,
+        ViewHelper $helper,
+        MessageBusInterface $bus,
+    ): Response {
+        if (!$this->isCsrfTokenValid(\sprintf('retry-%s-%s', $id, $name), $request->request->getString('_token'))) {
+            throw new HttpException(419, 'Invalid CSRF token.');
+        }
+
+        $transport = $helper->transports->get($name);
+        $message = $transport->find($id) ?? throw $this->createNotFoundException('Message not found.');
+        $originalTransportName = $message->envelope()->last(SentToFailureTransportStamp::class)?->getOriginalReceiverName() ?? throw $this->createNotFoundException('Original transport not found.');
+
+        $bus->dispatch($message->envelope(), [
+            new TagStamp('retry'),
+            new TagStamp('manual'),
+        ]);
+        $transport->get()->reject($message->envelope());
+
+        $this->addFlash('success', \sprintf('Retrying message "%s" on transport "%s".', $message->message()->shortName(), $originalTransportName));
 
         return $this->redirectToRoute('zenstruck_messenger_monitor_transport', ['name' => $name]);
     }
