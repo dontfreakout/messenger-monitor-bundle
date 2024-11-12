@@ -156,9 +156,7 @@ abstract class MessengerMonitorController extends AbstractController
         Request $request,
         ViewHelper $helper,
     ): Response {
-        if (!$this->isCsrfTokenValid(\sprintf('remove-%s-%s', $id, $name), $request->request->getString('_token'))) {
-            throw new HttpException(419, 'Invalid CSRF token.');
-        }
+        $helper->validateCsrfToken($request->request->getString('_token'), 'remove', $id, $name);
 
         $transport = $helper->transports->get($name);
         $message = $transport->find($id) ?? throw $this->createNotFoundException('Message not found.');
@@ -178,9 +176,7 @@ abstract class MessengerMonitorController extends AbstractController
         ViewHelper $helper,
         MessageBusInterface $bus,
     ): Response {
-        if (!$this->isCsrfTokenValid(\sprintf('retry-%s-%s', $id, $name), $request->request->getString('_token'))) {
-            throw new HttpException(419, 'Invalid CSRF token.');
-        }
+        $helper->validateCsrfToken($request->request->getString('_token'), 'retry', $id, $name);
 
         $transport = $helper->transports->get($name);
         $message = $transport->find($id) ?? throw $this->createNotFoundException('Message not found.');
@@ -241,10 +237,9 @@ abstract class MessengerMonitorController extends AbstractController
         Request $request,
         Schedules $schedules,
         MessageBusInterface $bus,
+        ViewHelper $helper,
     ): Response {
-        if (!$this->isCsrfTokenValid(\sprintf('trigger-%s-%s', $id, $transport), $request->request->getString('_token'))) {
-            throw new HttpException(419, 'Invalid CSRF token.');
-        }
+        $helper->validateCsrfToken($request->request->getString('_token'), 'trigger', $id, $transport);
 
         $task = $schedules->get($name)->task($id);
 

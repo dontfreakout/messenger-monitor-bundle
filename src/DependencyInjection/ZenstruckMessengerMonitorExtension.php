@@ -136,7 +136,7 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
 
         $container->setParameter('zenstruck_messenger_monitor.security_role', $config['role']);
         $container->getDefinition('zenstruck_messenger_monitor.view_helper')
-            ->setArgument(5, \interface_exists(AssetMapperInterface::class) ? ViewHelper::ASSET_MAPPER : ViewHelper::ENCORE)
+            ->setArgument(6, \interface_exists(AssetMapperInterface::class) ? ViewHelper::ASSET_MAPPER : ViewHelper::ENCORE)
         ;
     }
 }
