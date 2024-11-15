@@ -44,54 +44,57 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('.message-details').forEach(element => {
-                    element.addEventListener('click', (event) => {
-                        event.preventDefault();
+        <script type="module">
+            import { Application, Controller } from "https://unpkg.com/@hotwired/stimulus/dist/stimulus.js"
+            window.Stimulus = Application.start()
 
-                        fetch(element.getAttribute('href'))
-                            .then(response => response.text())
-                            .then(html => {
-                                const modal = new bootstrap.Modal(document.getElementById('message-details-modal'));
-                                const modalContent = modal._element.querySelector('.modal-content');
+            Stimulus.register('message-details', class extends Controller {
+                click(event) {
+                    event.preventDefault();
 
-                                modalContent.innerHTML = html;
-                                modal.show();
-                            })
-                            .catch(error => console.error('Error:', error))
-                        ;
-                    });
-                });
+                    fetch(this.element.getAttribute('href'))
+                        .then(response => response.text())
+                        .then(html => {
+                            const modal = new bootstrap.Modal(document.getElementById('message-details-modal'));
+                            const modalContent = modal._element.querySelector('.modal-content');
 
-                document.querySelectorAll('.toast').forEach(element => {
-                    (new bootstrap.Toast(element)).show();
-                });
+                            modalContent.innerHTML = html;
+                            modal.show();
+                        })
+                        .catch(error => console.error('Error:', error))
+                    ;
+                }
+            });
 
-                document.querySelectorAll('.post-link').forEach(element => {
-                    element.addEventListener('click', (event) => {
-                        event.preventDefault();
+            Stimulus.register('toast', class extends Controller {
+                connect() {
+                    (new bootstrap.Toast(this.element)).show();
+                }
+            });
 
-                        if (element.dataset.confirm && !confirm(element.dataset.confirm)) {
-                            return;
-                        }
+            Stimulus.register('post-link', class extends Controller {
+                click(event) {
+                    event.preventDefault();
 
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = element.getAttribute('href');
+                    if (this.element.dataset.confirm && !confirm(this.element.dataset.confirm)) {
+                        return;
+                    }
 
-                        if (element.dataset.token) {
-                            const token = document.createElement('input');
-                            token.type = 'hidden';
-                            token.name = '_token';
-                            token.value = element.dataset.token;
-                            form.appendChild(token);
-                        }
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = this.element.getAttribute('href');
 
-                        document.body.appendChild(form);
-                        form.submit();
-                    });
-                });
+                    if (this.element.dataset.token) {
+                        const token = document.createElement('input');
+                        token.type = 'hidden';
+                        token.name = '_token';
+                        token.value = this.element.dataset.token;
+                        form.appendChild(token);
+                    }
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             });
         </script>
     {% endblock %}
@@ -251,7 +254,7 @@
 {% for label, messages in app.flashes %}
     {% for message in messages %}
         <div class="toast-container position-fixed top-0 end-0 p-3 mt-2">
-            <div class="toast text-bg-{{ label }}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast text-bg-{{ label }}" role="alert" aria-live="assertive" aria-atomic="true" data-controller="toast">
                 <div class="d-flex">
                     <div class="toast-body">{{ message }}</div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
