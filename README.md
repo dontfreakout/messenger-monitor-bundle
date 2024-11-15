@@ -299,11 +299,6 @@ when@dev:
 
 ```yaml
 zenstruck_messenger_monitor:
-    live_components:
-        enabled:              false
-
-        # Role required to view live components.
-        role:                 ROLE_MESSENGER_MONITOR
     storage:
         orm:
 

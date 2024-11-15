@@ -25,13 +25,8 @@ use Zenstruck\Messenger\Monitor\Workers;
  */
 final class ViewHelper
 {
-    public const ASSET_MAPPER = 'asset_mapper';
-    public const ENCORE = 'encore';
-
     /**
      * @internal
-     *
-     * @param null|self::ASSET_MAPPER|self::ENCORE $assetManager
      */
     public function __construct(
         public readonly Transports $transports,
@@ -40,13 +35,7 @@ final class ViewHelper
         public readonly ?Schedules $schedules,
         public readonly ?DateTimeFormatter $timeFormatter,
         public readonly ?CsrfTokenManagerInterface $csrfTokenManager,
-        public readonly ?string $assetManager = null,
     ) {
-    }
-
-    public function useLiveComponents(): bool
-    {
-        return null !== $this->assetManager;
     }
 
     public function canFormatDuration(): bool

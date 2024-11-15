@@ -36,15 +36,6 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
 
         $builder->getRootNode() // @phpstan-ignore-line
             ->children()
-                ->arrayNode('live_components')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('role')
-                            ->info('Role required to view live components.')
-                            ->defaultValue('ROLE_MESSENGER_MONITOR')
-                        ->end()
-                    ->end()
-                ->end()
                 ->arrayNode('storage')
                     ->children()
                         ->arrayNode('orm')
@@ -109,34 +100,5 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
                 $container->removeDefinition('.zenstruck_messenger_monitor.command.schedule_purge');
             }
         }
-
-        if ($mergedConfig['live_components']['enabled']) {
-            $loader->load('live_components.php');
-
-            self::loadLiveComponents($container, $mergedConfig['live_components']);
-        }
-    }
-
-    /**
-     * @param mixed[] $config
-     */
-    private static function loadLiveComponents(ContainerBuilder $container, array $config): void
-    {
-        if (!isset($container->getParameter('kernel.bundles')['LiveComponentBundle'])) {
-            throw new LogicException('"LiveComponentBundle" (symfony/ux-live-component) must be installed to use live components.');
-        }
-
-        if (!isset($container->getParameter('kernel.bundles')['StimulusBundle'])) {
-            throw new LogicException('The "StimulusBundle" (symfony/stimulus-bundle) must be installed to use live components.');
-        }
-
-        if (!\interface_exists(AssetMapperInterface::class) && !isset($container->getParameter('kernel.bundles')['WebpackEncoreBundle'])) {
-            throw new \LogicException('symfony/asset-mapper or encore must be available to use live components.');
-        }
-
-        $container->setParameter('zenstruck_messenger_monitor.security_role', $config['role']);
-        $container->getDefinition('zenstruck_messenger_monitor.view_helper')
-            ->setArgument(6, \interface_exists(AssetMapperInterface::class) ? ViewHelper::ASSET_MAPPER : ViewHelper::ENCORE)
-        ;
     }
 }

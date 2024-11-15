@@ -1,4 +1,4 @@
-<div class="card"{{ attributes|default('') }}>
+<div class="card">
     <div class="card-header card-header d-flex align-items-center justify-content-between">
         <div>
             Snapshot
@@ -6,9 +6,6 @@
                 <small><em class="text-secondary">{{ subtitle }}</em></small>
             {% endif %}
         </div>
-        {% if live|default(false) %}
-            {{ include('@ZenstruckMessengerMonitor/components/_loading.html.twig') }}
-        {% endif %}
     </div>
     <div class="table-responsive">
         <table class="table card-table table-striped align-text-top text-nowrap">
