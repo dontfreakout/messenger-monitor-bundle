@@ -1,0 +1,21 @@
+<div data-controller="refreshable" class="position-relative" data-refreshable-url-value="{{ url }}">
+    <div class="position-absolute top-0 end-0 z-2 d-flex align-items-center" style="margin-top: 8px; min-height: 26px;">
+        <div class="d-none spinner-border spinner-border-sm spinner-border-slow text-secondary opacity-50 me-2" data-refreshable-target="indicator" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        {% block buttons %}
+            <button title="Refresh" data-action="refreshable#refresh" data-refreshable-target="refresh" class="d-none btn btn-light btn-outline-secondary btn-sm d-flex align-items-center me-2">
+                <svg width="16" height="16" fill="currentColor"><use xlink:href="#refresh-icon"/></svg>
+            </button>
+            <button title="Pause Polling" data-action="refreshable#pause" data-refreshable-target="pause" class="btn btn-light btn-outline-secondary btn-sm d-flex align-items-center me-2">
+                <svg width="16" height="16" fill="currentColor"><use xlink:href="#pause-icon"/></svg>
+            </button>
+            <button title="Start Polling" data-action="refreshable#start" data-refreshable-target="start" class="d-none btn btn-light btn-outline-secondary btn-sm d-flex align-items-center me-2">
+                <svg width="16" height="16" fill="currentColor"><use xlink:href="#play-icon"/></svg>
+            </button>
+        {% endblock %}
+    </div>
+    <div data-refreshable-target="content">
+        {% block content %}{% endblock %}
+    </div>
+</div>
