@@ -123,19 +123,15 @@
                                     <svg fill="currentcolor" height="1em" width="1em" class="me-1 align-text-bottom" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
                                 {% endif %}
 
-                                {% if message and helper.timeFormatter %}
-                                        <abbr title="{{ message.finishedAt|date('c') }}">{{ helper.timeFormatter.formatDiff(message.finishedAt) }}</abbr>
-                                {% elseif message %}
-                                    {{ message.finishedAt|date('c') }}
+                                {% if message %}
+                                    <abbr title="{{ message.finishedAt|date('c') }}">{{ helper.formatTime(message.finishedAt) }}</abbr>
                                 {% else %}
                                     <em class="text-secondary">Never</em>
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                {% if message and helper.canFormatDuration %}
-                                    <abbr title="{{ message.timeToHandle }}s">{{ helper.timeFormatter.formatDuration(message.timeToHandle) }}</abbr>
-                                {% elseif message %}
-                                    {{ message.timeToHandle }}s
+                                {% if message %}
+                                    <abbr title="{{ message.timeToHandle }}s">{{ helper.formatDuration(message.timeToHandle) }}</abbr>
                                 {% else %}
                                     <em class="text-secondary">-</em>
                                 {% endif %}

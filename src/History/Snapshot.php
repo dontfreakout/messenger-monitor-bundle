@@ -77,16 +77,25 @@ final class Snapshot
         }
     }
 
+    /**
+     * @return float In seconds
+     */
     public function averageWaitTime(): float
     {
         return $this->averageWaitTime ??= $this->storage->averageWaitTime($this->specification) ?? 0.0;
     }
 
+    /**
+     * @return float In seconds
+     */
     public function averageHandlingTime(): float
     {
         return $this->averageHandlingTime ??= $this->storage->averageHandlingTime($this->specification) ?? 0.0;
     }
 
+    /**
+     * @return float In seconds
+     */
     public function averageProcessingTime(): float
     {
         return $this->averageWaitTime() + $this->averageHandlingTime();

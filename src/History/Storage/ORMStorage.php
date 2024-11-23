@@ -64,8 +64,8 @@ final class ORMStorage implements Storage
             ->select('m.type')
             ->addSelect('COUNT(m.type) as total_count')
             ->addSelect('COUNT(m.failureType) as failure_count')
-            ->addSelect('AVG(m.waitTime) as avg_wait_time')
-            ->addSelect('AVG(m.handleTime) as avg_handling_time')
+            ->addSelect('AVG(m.waitTime) / 1000 AS avg_wait_time')
+            ->addSelect('AVG(m.handleTime) / 1000 AS avg_handling_time')
             ->groupBy('m.type')
         ;
 
@@ -121,7 +121,7 @@ final class ORMStorage implements Storage
     {
         $qb = $this
             ->queryBuilderFor($specification, false)
-            ->select('AVG(m.waitTime)')
+            ->select('AVG(m.waitTime) / 1000')
         ;
 
         return (new EntityResult($qb))->asFloat()->first();
@@ -131,7 +131,7 @@ final class ORMStorage implements Storage
     {
         $qb = $this
             ->queryBuilderFor($specification, false)
-            ->select('AVG(m.handleTime)')
+            ->select('AVG(m.handleTime) / 1000')
         ;
 
         return (new EntityResult($qb))->asFloat()->first();

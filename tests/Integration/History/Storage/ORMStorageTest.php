@@ -46,7 +46,7 @@ final class ORMStorageTest extends KernelTestCase
             'receivedAt' => $start->modify('+10 seconds'),
         ]);
 
-        $this->assertSame(15, (int) $this->storage()->averageWaitTime(Specification::new()));
+        $this->assertSame(15.0, $this->storage()->averageWaitTime(Specification::new()));
     }
 
     /**

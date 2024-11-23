@@ -37,14 +37,10 @@ abstract class MessengerMonitorController extends AbstractController
     #[Route(name: 'zenstruck_messenger_monitor_dashboard')]
     public function dashboard(ViewHelper $helper): Response
     {
-        if (!$helper->storage) {
-            throw new \LogicException('Storage must be configured to use the dashboard.');
-        }
-
         return $this->render('@ZenstruckMessengerMonitor/dashboard.html.twig', [
             'helper' => $helper,
-            'snapshot' => Specification::create(Period::IN_LAST_DAY)->snapshot($helper->storage),
-            'messages' => Specification::new()->snapshot($helper->storage)->messages(),
+            'snapshot' => Specification::create(Period::IN_LAST_DAY)->snapshot($helper->storage()),
+            'messages' => Specification::new()->snapshot($helper->storage())->messages(),
         ]);
     }
 
@@ -53,10 +49,6 @@ abstract class MessengerMonitorController extends AbstractController
         Request $request,
         ViewHelper $helper,
     ): Response {
-        if (!$helper->storage) {
-            throw new \LogicException('Storage must be configured to use the dashboard.');
-        }
-
         $period = Period::parse($request->query->getString('period'));
         $specification = Specification::create([ // @phpstan-ignore-line
             'period' => $period,
@@ -66,7 +58,7 @@ abstract class MessengerMonitorController extends AbstractController
             'helper' => $helper,
             'periods' => [...Period::inLastCases(), ...Period::absoluteCases()],
             'period' => $period,
-            'metrics' => $specification->snapshot($helper->storage)->perMessageTypeMetrics(),
+            'metrics' => $specification->snapshot($helper->storage())->perMessageTypeMetrics(),
         ]);
     }
 
@@ -75,10 +67,6 @@ abstract class MessengerMonitorController extends AbstractController
         Request $request,
         ViewHelper $helper,
     ): Response {
-        if (!$helper->storage) {
-            throw new \LogicException('Storage must be configured to use the dashboard.');
-        }
-
         $tags = [$request->query->get('tag')];
         $notTags = [];
         $period = Period::parse($request->query->getString('period'));
@@ -102,26 +90,22 @@ abstract class MessengerMonitorController extends AbstractController
             'helper' => $helper,
             'periods' => [...Period::inLastCases(), ...Period::absoluteCases()],
             'period' => $period,
-            'snapshot' => $specification->snapshot($helper->storage),
-            'filters' => $specification->filters($helper->storage),
+            'snapshot' => $specification->snapshot($helper->storage()),
+            'filters' => $specification->filters($helper->storage()),
         ]);
     }
 
     #[Route('/history/{id}', name: 'zenstruck_messenger_monitor_detail')]
     public function detail(string $id, ViewHelper $helper): Response
     {
-        if (!$helper->storage) {
-            throw new \LogicException('Storage must be configured to use the dashboard.');
-        }
-
-        if (!$message = $helper->storage->find($id)) {
+        if (!$message = $helper->storage()->find($id)) {
             throw $this->createNotFoundException('Message not found.');
         }
 
         return $this->render('@ZenstruckMessengerMonitor/detail.html.twig', [
             'helper' => $helper,
             'message' => $message,
-            'other_attempts' => $helper->storage->filter(Specification::create(['run_id' => $message->runId()])),
+            'other_attempts' => $helper->storage()->filter(Specification::create(['run_id' => $message->runId()])),
         ]);
     }
 
@@ -289,13 +273,9 @@ abstract class MessengerMonitorController extends AbstractController
     public function snapshotWidget(
         ViewHelper $helper,
     ): Response {
-        if (!$helper->storage) {
-            throw new \LogicException('Storage must be configured to use the dashboard.');
-        }
-
         return $this->render('@ZenstruckMessengerMonitor/components/snapshot.html.twig', [
             'helper' => $helper,
-            'snapshot' => Specification::create(Period::IN_LAST_DAY)->snapshot($helper->storage),
+            'snapshot' => Specification::create(Period::IN_LAST_DAY)->snapshot($helper->storage()),
             'subtitle' => 'Last 24 Hours',
         ]);
     }
@@ -304,12 +284,8 @@ abstract class MessengerMonitorController extends AbstractController
     public function recentMessagesWidget(
         ViewHelper $helper,
     ): Response {
-        if (!$helper->storage) {
-            throw new \LogicException('Storage must be configured to use the dashboard.');
-        }
-
         return $this->render('@ZenstruckMessengerMonitor/components/recent_messages.html.twig', [
-            'messages' => Specification::new()->snapshot($helper->storage)->messages(),
+            'messages' => Specification::new()->snapshot($helper->storage())->messages(),
             'helper' => $helper,
         ]);
     }

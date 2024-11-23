@@ -31,11 +31,11 @@ final class ProcessedMessageFactory extends PersistentObjectFactory
             ->instantiateWith(Instantiator::withoutConstructor()->alwaysForce())
             ->beforeInstantiate(function(array $attributes) {
                 if (!isset($attributes['waitTime'])) {
-                    $attributes['waitTime'] = \max(0, $attributes['receivedAt']->getTimestamp() - $attributes['dispatchedAt']->getTimestamp());
+                    $attributes['waitTime'] = \max(0, $attributes['receivedAt']->format('Uv') - $attributes['dispatchedAt']->format('Uv'));
                 }
 
                 if (!isset($attributes['processingTime'])) {
-                    $attributes['handleTime'] = \max(0, $attributes['finishedAt']->getTimestamp() - $attributes['receivedAt']->getTimestamp());
+                    $attributes['handleTime'] = \max(0, $attributes['finishedAt']->format('Uv') - $attributes['receivedAt']->format('Uv'));
                 }
 
                 return $attributes;

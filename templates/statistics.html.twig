@@ -82,18 +82,10 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if helper.canFormatDuration %}
-                                    <abbr title="{{ metric.averageWaitTime|round }}s">{{ helper.timeFormatter.formatDuration(metric.averageWaitTime) }}</abbr>
-                                {% else %}
-                                    {{ metric.averageWaitTime|round }}s
-                                {% endif %}
+                                <abbr title="{{ metric.averageWaitTime|round }}s">{{ helper.formatDuration(metric.averageWaitTime) }}</abbr>
                             </td>
                             <td>
-                                {% if helper.canFormatDuration %}
-                                    <abbr title="{{ metric.averageHandlingTime|round }}s">{{ helper.timeFormatter.formatDuration(metric.averageHandlingTime) }}</abbr>
-                                {% else %}
-                                    {{ metric.averageHandlingTime|round }}s
-                                {% endif %}
+                                <abbr title="{{ metric.averageHandlingTime|round }}s">{{ helper.formatDuration(metric.averageHandlingTime) }}</abbr>
                             </td>
                             <td>
                                 {{ metric.handledPerMinute|round(2) }}

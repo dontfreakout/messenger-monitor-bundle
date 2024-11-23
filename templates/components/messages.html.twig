@@ -47,11 +47,7 @@
                             <a href="{{ path('zenstruck_messenger_monitor_history', app.request.query.all|merge({transport: message.transport})) }}" class="badge align-text-top text-bg-secondary">{{ message.transport }}</a>
                         </td>
                         <td class="text-center">
-                            {% if helper.canFormatDuration %}
-                                <abbr title="{{ message.timeToHandle }}s">{{ helper.timeFormatter.formatDuration(message.timeToHandle) }}</abbr>
-                            {% else %}
-                                {{ message.timeToHandle }}s
-                            {% endif %}
+                            <abbr title="{{ message.timeToHandle }}s">{{ helper.formatDuration(message.timeToHandle) }}</abbr>
                         </td>
                         <td class="text-center">
                             {{ message.memoryUsage }}
@@ -64,11 +60,7 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% if helper.timeFormatter %}
-                                <abbr title="{{ message.finishedAt|date('c') }}">{{ helper.timeFormatter.formatDiff(message.finishedAt) }}</abbr>
-                            {% else %}
-                                {{ message.finishedAt|date('c') }}
-                            {% endif %}
+                            <abbr title="{{ message.finishedAt|date('c') }}">{{ helper.formatTime(message.finishedAt) }}</abbr>
                         </td>
                         <td>
                             <a href="{{ path('zenstruck_messenger_monitor_detail', {id: message.id}) }}" class="btn btn-sm btn-secondary d-inline-flex align-items-center" data-controller="message-details" data-action="message-details#click">

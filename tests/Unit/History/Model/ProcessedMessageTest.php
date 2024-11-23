@@ -36,6 +36,7 @@ final class ProcessedMessageTest extends TestCase
     public function minimal_constructor(): void
     {
         $start = self::mockTime()->now()->getTimestamp();
+
         $stamp = new MonitorStamp();
 
         Clock::get()->sleep(1);
@@ -64,9 +65,9 @@ final class ProcessedMessageTest extends TestCase
         $this->assertSame([], $message->tags()->all());
         $this->assertSame([], $message->results()->all());
         $this->assertSame('foo', $message->transport());
-        $this->assertSame(1, $message->timeInQueue());
-        $this->assertSame(2, $message->timeToHandle());
-        $this->assertSame(3, $message->timeToProcess());
+        $this->assertSame(1.0, $message->timeInQueue());
+        $this->assertSame(2.0, $message->timeToHandle());
+        $this->assertSame(3.0, $message->timeToProcess());
         $this->assertFalse($message->isFailure());
         $this->assertNull($message->failure());
         $this->assertTrue($message->memoryUsage()->isGreaterThan(0));
@@ -101,7 +102,7 @@ final class ProcessedMessageTest extends TestCase
         $this->assertSame([['exception' => \RuntimeException::class, 'message' => 'failure', 'data' => []]], $message->results()->jsonSerialize());
         $this->assertTrue($message->isFailure());
         $this->assertSame('RuntimeException', (string) $message->failure());
-        $this->assertSame('fail', $message->failure()->description());
+        $this->assertSame('fail', $message->failure()?->description());
     }
 
     /**
@@ -138,5 +139,38 @@ final class ProcessedMessageTest extends TestCase
 
         $this->assertSame(StringableObject::class, $message->type()->class());
         $this->assertSame('description value', $message->description());
+    }
+
+    /**
+     * @test
+     */
+    public function partial_seconds(): void
+    {
+        $start = self::mockTime('2024-10-06')->now();
+
+        $stamp = new MonitorStamp();
+
+        Clock::get()->sleep(1.1);
+
+        $stamp = $stamp->markReceived('foo');
+
+        Clock::get()->sleep(2.2);
+
+        $stamp = $stamp->markFinished();
+
+        $envelope = new Envelope(new \stdClass(), [$stamp]);
+        $message = new class($envelope, new Results([])) extends ProcessedMessage {
+            public function id(): string|int|\Stringable|null
+            {
+                return null;
+            }
+        };
+
+        $this->assertEquals($start, $message->dispatchedAt());
+        $this->assertEquals($start->modify('+1100 milliseconds'), $message->receivedAt());
+        $this->assertEquals($start->modify('+3300 milliseconds'), $message->finishedAt());
+        $this->assertSame(1.1, $message->timeInQueue());
+        $this->assertSame(2.2, $message->timeToHandle());
+        $this->assertSame(3.3, \round($message->timeToProcess(), 1));
     }
 }
