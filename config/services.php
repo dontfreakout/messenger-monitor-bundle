@@ -6,6 +6,7 @@ use Symfony\Component\Messenger\Event\WorkerRunningEvent;
 use Symfony\Component\Messenger\Event\WorkerStartedEvent;
 use Symfony\Component\Messenger\Event\WorkerStoppedEvent;
 use Zenstruck\Messenger\Monitor\Command\MonitorCommand;
+use Zenstruck\Messenger\Monitor\Serializer\Normalizer\MonitorStampNormalizer;
 use Zenstruck\Messenger\Monitor\Transports;
 use Zenstruck\Messenger\Monitor\Twig\ViewHelper;
 use Zenstruck\Messenger\Monitor\Worker\WorkerCache;
@@ -58,5 +59,10 @@ return static function (ContainerConfigurator $container): void {
                 service('security.csrf.token_manager')->nullOnInvalid(),
             ])
             ->alias(ViewHelper::class, 'zenstruck_messenger_monitor.view_helper')
+
+        ->set('.zenstruck_messenger_monitor.normalizer.monitor_stamp', MonitorStampNormalizer::class)
+            ->tag('serializer.normalizer')
+            ->tag('serializer.denormalizer')
+        ;
     ;
 };
