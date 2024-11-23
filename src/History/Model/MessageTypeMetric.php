@@ -11,14 +11,15 @@
 
 namespace Zenstruck\Messenger\Monitor\History\Model;
 
+use Zenstruck\Messenger\Monitor\History\Metric;
 use Zenstruck\Messenger\Monitor\Type;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class MessageTypeMetric
+final class MessageTypeMetric extends Metric
 {
-    public readonly Type $type;
+    private readonly Type $type;
 
     /**
      * @param class-string $class
@@ -27,46 +28,42 @@ final class MessageTypeMetric
      */
     public function __construct(
         string $class,
-        public readonly int $totalCount,
-        public readonly int $failureCount,
-        public readonly float $averageWaitTime,
-        public readonly float $averageHandlingTime,
+        private readonly int $totalCount,
+        private readonly int $failureCount,
+        private readonly float $averageWaitTime,
+        private readonly float $averageHandlingTime,
         private readonly int $totalSeconds,
     ) {
         $this->type = new Type($class);
     }
 
-    public function failRate(): float
+    public function type(): Type
     {
-        try {
-            return $this->failureCount / $this->totalCount;
-        } catch (\DivisionByZeroError) {
-            return 0;
-        }
+        return $this->type;
     }
 
-    /**
-     * @param positive-int $divisor Seconds
-     */
-    public function handledPer(int $divisor): float
+    public function averageWaitTime(): float
     {
-        $interval = $this->totalSeconds / $divisor;
-
-        return $this->totalCount / $interval;
+        return $this->averageWaitTime;
     }
 
-    public function handledPerMinute(): float
+    public function averageHandlingTime(): float
     {
-        return $this->handledPer(60);
+        return $this->averageHandlingTime;
     }
 
-    public function handledPerHour(): float
+    public function failureCount(): int
     {
-        return $this->handledPer(60 * 60);
+        return $this->failureCount;
     }
 
-    public function handledPerDay(): float
+    public function totalCount(): int
     {
-        return $this->handledPer(60 * 60 * 24);
+        return $this->totalCount;
+    }
+
+    protected function totalSeconds(): int
+    {
+        return $this->totalSeconds;
     }
 }

@@ -20,7 +20,7 @@ use function Symfony\Component\Clock\now;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class Snapshot
+final class Snapshot extends Metric
 {
     private int $successCount;
     private int $failureCount;
@@ -68,62 +68,14 @@ final class Snapshot
         return $this->failureCount ??= $this->storage->count($this->specification->failures());
     }
 
-    public function failRate(): float
-    {
-        try {
-            return $this->failureCount() / $this->totalCount();
-        } catch (\DivisionByZeroError) {
-            return 0;
-        }
-    }
-
-    /**
-     * @return float In seconds
-     */
     public function averageWaitTime(): float
     {
         return $this->averageWaitTime ??= $this->storage->averageWaitTime($this->specification) ?? 0.0;
     }
 
-    /**
-     * @return float In seconds
-     */
     public function averageHandlingTime(): float
     {
         return $this->averageHandlingTime ??= $this->storage->averageHandlingTime($this->specification) ?? 0.0;
-    }
-
-    /**
-     * @return float In seconds
-     */
-    public function averageProcessingTime(): float
-    {
-        return $this->averageWaitTime() + $this->averageHandlingTime();
-    }
-
-    /**
-     * @param positive-int $divisor Seconds
-     */
-    public function handledPer(int $divisor): float
-    {
-        $interval = $this->totalSeconds() / $divisor;
-
-        return $this->totalCount() / $interval;
-    }
-
-    public function handledPerMinute(): float
-    {
-        return $this->handledPer(60);
-    }
-
-    public function handledPerHour(): float
-    {
-        return $this->handledPer(60 * 60);
-    }
-
-    public function handledPerDay(): float
-    {
-        return $this->handledPer(60 * 60 * 24);
     }
 
     public function totalSeconds(): int
