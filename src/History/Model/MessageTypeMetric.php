@@ -22,8 +22,8 @@ final class MessageTypeMetric
 
     /**
      * @param class-string $class
-     * @param float $averageWaitTime In seconds
-     * @param float $averageHandlingTime In seconds
+     * @param float        $averageWaitTime     In seconds
+     * @param float        $averageHandlingTime In seconds
      */
     public function __construct(
         string $class,
