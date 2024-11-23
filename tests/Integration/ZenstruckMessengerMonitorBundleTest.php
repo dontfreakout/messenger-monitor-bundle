@@ -24,7 +24,7 @@ use Zenstruck\Messenger\Monitor\Tests\Fixture\TestService;
  */
 final class ZenstruckMessengerMonitorBundleTest extends KernelTestCase
 {
-    use InteractsWithConsole, ResetDatabase, ClockSensitiveTrait;
+    use ClockSensitiveTrait, InteractsWithConsole, ResetDatabase;
 
     /**
      * @test
