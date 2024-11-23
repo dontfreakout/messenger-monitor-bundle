@@ -32,8 +32,8 @@ final class SnapshotTest extends TestCase
         $storage = $this->createMock(Storage::class);
         $storage->expects($this->once())->method('filter')->with($spec)->willReturn(collect(['foo', 'bar']));
         $storage->expects($this->exactly(2))->method('count')->with($this->isInstanceOf(Specification::class))->willReturn(60, 40);
-        $storage->expects($this->once())->method('averageWaitTime')->with($spec)->willReturn(2.0);
-        $storage->expects($this->once())->method('averageHandlingTime')->with($spec)->willReturn(1.0);
+        $storage->expects($this->once())->method('averageWaitTime')->with($spec)->willReturn(2000);
+        $storage->expects($this->once())->method('averageHandlingTime')->with($spec)->willReturn(1000);
 
         $snapshot = new Snapshot($storage, $spec);
 
@@ -41,9 +41,9 @@ final class SnapshotTest extends TestCase
         $this->assertSame(60, $snapshot->successCount());
         $this->assertSame(40, $snapshot->failureCount());
         $this->assertSame(100, $snapshot->totalCount());
-        $this->assertSame(2.0, $snapshot->averageWaitTime());
-        $this->assertSame(1.0, $snapshot->averageHandlingTime());
-        $this->assertSame(3.0, $snapshot->averageProcessingTime());
+        $this->assertSame(2000, $snapshot->averageWaitTime());
+        $this->assertSame(1000, $snapshot->averageHandlingTime());
+        $this->assertSame(3000, $snapshot->averageProcessingTime());
         $this->assertSame(0.4, $snapshot->failRate());
         $this->assertSame(0.069, \round($snapshot->handledPerMinute(), 3));
         $this->assertSame(4.167, \round($snapshot->handledPerHour(), 3));
@@ -88,8 +88,8 @@ final class SnapshotTest extends TestCase
 
         $snapshot = new Snapshot($storage, $spec);
 
-        $this->assertSame(0.0, $snapshot->averageWaitTime());
-        $this->assertSame(0.0, $snapshot->averageHandlingTime());
-        $this->assertSame(0.0, $snapshot->averageProcessingTime());
+        $this->assertSame(0, $snapshot->averageWaitTime());
+        $this->assertSame(0, $snapshot->averageHandlingTime());
+        $this->assertSame(0, $snapshot->averageProcessingTime());
     }
 }

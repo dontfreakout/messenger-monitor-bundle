@@ -46,7 +46,7 @@ final class ORMStorageTest extends KernelTestCase
             'receivedAt' => $start->modify('+10 seconds'),
         ]);
 
-        $this->assertSame(15.0, $this->storage()->averageWaitTime(Specification::new()));
+        $this->assertSame(15000, $this->storage()->averageWaitTime(Specification::new()));
     }
 
     /**
@@ -65,7 +65,7 @@ final class ORMStorageTest extends KernelTestCase
             'finishedAt' => $start->modify('+20 seconds'),
         ]);
 
-        $this->assertSame(30, (int) $this->storage()->averageHandlingTime(Specification::new()));
+        $this->assertSame(30000, (int) $this->storage()->averageHandlingTime(Specification::new()));
     }
 
     /**
@@ -123,8 +123,8 @@ final class ORMStorageTest extends KernelTestCase
         $this->assertSame(2, $messageTypeMetrics[0]->totalCount());
         $this->assertSame(0, $messageTypeMetrics[0]->failureCount());
         $this->assertSame(0.0, $messageTypeMetrics[0]->failRate());
-        $this->assertSame(15.0, $messageTypeMetrics[0]->averageWaitTime());
-        $this->assertSame(20.0, $messageTypeMetrics[0]->averageHandlingTime());
+        $this->assertSame(15000, $messageTypeMetrics[0]->averageWaitTime());
+        $this->assertSame(20000, $messageTypeMetrics[0]->averageHandlingTime());
         $this->assertSame(48.0, $messageTypeMetrics[0]->handledPerDay());
         $this->assertSame(2.0, \round($messageTypeMetrics[0]->handledPerHour(), 2));
         $this->assertSame(0.03, \round($messageTypeMetrics[0]->handledPerMinute(), 2));
@@ -133,8 +133,8 @@ final class ORMStorageTest extends KernelTestCase
         $this->assertSame(3, $messageTypeMetrics[1]->totalCount());
         $this->assertSame(1, $messageTypeMetrics[1]->failureCount());
         $this->assertSame(0.33, \round($messageTypeMetrics[1]->failRate(), 2));
-        $this->assertSame(11.67, \round($messageTypeMetrics[1]->averageWaitTime(), 2));
-        $this->assertSame(13.33, \round($messageTypeMetrics[1]->averageHandlingTime(), 2));
+        $this->assertSame(11666, $messageTypeMetrics[1]->averageWaitTime());
+        $this->assertSame(13333, $messageTypeMetrics[1]->averageHandlingTime());
         $this->assertSame(72.0, $messageTypeMetrics[1]->handledPerDay());
         $this->assertSame(0.05, \round($messageTypeMetrics[1]->handledPerMinute(), 2));
     }

@@ -51,22 +51,22 @@ abstract class Metric
     }
 
     /**
-     * @return float In seconds
+     * @return int milliseconds
      */
-    final public function averageProcessingTime(): float
+    final public function averageProcessingTime(): int
     {
         return $this->averageWaitTime() + $this->averageHandlingTime();
     }
 
     /**
-     * @return float In seconds
+     * @return int milliseconds
      */
-    abstract public function averageWaitTime(): float;
+    abstract public function averageWaitTime(): int;
 
     /**
-     * @return float In seconds
+     * @return int milliseconds
      */
-    abstract public function averageHandlingTime(): float;
+    abstract public function averageHandlingTime(): int;
 
     abstract public function failureCount(): int;
 

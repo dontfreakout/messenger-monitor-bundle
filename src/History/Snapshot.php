@@ -24,8 +24,8 @@ final class Snapshot extends Metric
 {
     private int $successCount;
     private int $failureCount;
-    private float $averageWaitTime;
-    private float $averageHandlingTime;
+    private int $averageWaitTime;
+    private int $averageHandlingTime;
     private int $totalSeconds;
 
     public function __construct(private Storage $storage, private Specification $specification)
@@ -68,14 +68,14 @@ final class Snapshot extends Metric
         return $this->failureCount ??= $this->storage->count($this->specification->failures());
     }
 
-    public function averageWaitTime(): float
+    public function averageWaitTime(): int
     {
-        return $this->averageWaitTime ??= $this->storage->averageWaitTime($this->specification) ?? 0.0;
+        return $this->averageWaitTime ??= $this->storage->averageWaitTime($this->specification) ?? 0;
     }
 
-    public function averageHandlingTime(): float
+    public function averageHandlingTime(): int
     {
-        return $this->averageHandlingTime ??= $this->storage->averageHandlingTime($this->specification) ?? 0.0;
+        return $this->averageHandlingTime ??= $this->storage->averageHandlingTime($this->specification) ?? 0;
     }
 
     public function totalSeconds(): int

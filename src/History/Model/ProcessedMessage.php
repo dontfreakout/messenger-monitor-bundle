@@ -146,25 +146,25 @@ abstract class ProcessedMessage
     }
 
     /**
-     * @return float In seconds
+     * @return int milliseconds
      */
-    final public function timeInQueue(): float
+    final public function timeInQueue(): int
     {
-        return $this->waitTime / 1000;
+        return $this->waitTime;
     }
 
     /**
-     * @return float In seconds
+     * @return int milliseconds
      */
-    final public function timeToHandle(): float
+    final public function timeToHandle(): int
     {
-        return $this->handleTime / 1000;
+        return $this->handleTime;
     }
 
     /**
-     * @return float In seconds
+     * @return int milliseconds
      */
-    final public function timeToProcess(): float
+    final public function timeToProcess(): int
     {
         return $this->timeInQueue() + $this->timeToHandle();
     }

@@ -64,8 +64,8 @@ final class ORMStorage implements Storage
             ->select('m.type')
             ->addSelect('COUNT(m.type) as total_count')
             ->addSelect('COUNT(m.failureType) as failure_count')
-            ->addSelect('AVG(m.waitTime) / 1000 AS avg_wait_time')
-            ->addSelect('AVG(m.handleTime) / 1000 AS avg_handling_time')
+            ->addSelect('AVG(m.waitTime) AS avg_wait_time')
+            ->addSelect('AVG(m.handleTime) AS avg_handling_time')
             ->groupBy('m.type')
         ;
 
@@ -77,8 +77,8 @@ final class ORMStorage implements Storage
                     $data['type'],
                     $data['total_count'],
                     $data['failure_count'],
-                    (float) $data['avg_wait_time'],
-                    (float) $data['avg_handling_time'],
+                    (int) $data['avg_wait_time'],
+                    (int) $data['avg_handling_time'],
                     $totalSeconds,
                 );
             })
@@ -117,24 +117,24 @@ final class ORMStorage implements Storage
         return (new EntityResult($qb))->asString(); // @phpstan-ignore-line
     }
 
-    public function averageWaitTime(Specification $specification): ?float
+    public function averageWaitTime(Specification $specification): ?int
     {
         $qb = $this
             ->queryBuilderFor($specification, false)
-            ->select('AVG(m.waitTime) / 1000')
+            ->select('AVG(m.waitTime)')
         ;
 
-        return (new EntityResult($qb))->asFloat()->first();
+        return (new EntityResult($qb))->asInt()->first();
     }
 
-    public function averageHandlingTime(Specification $specification): ?float
+    public function averageHandlingTime(Specification $specification): ?int
     {
         $qb = $this
             ->queryBuilderFor($specification, false)
-            ->select('AVG(m.handleTime) / 1000')
+            ->select('AVG(m.handleTime)')
         ;
 
-        return (new EntityResult($qb))->asFloat()->first();
+        return (new EntityResult($qb))->asInt()->first();
     }
 
     public function count(Specification $specification): int

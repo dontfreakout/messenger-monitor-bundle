@@ -23,15 +23,13 @@ final class MessageTypeMetric extends Metric
 
     /**
      * @param class-string $class
-     * @param float        $averageWaitTime     In seconds
-     * @param float        $averageHandlingTime In seconds
      */
     public function __construct(
         string $class,
         private readonly int $totalCount,
         private readonly int $failureCount,
-        private readonly float $averageWaitTime,
-        private readonly float $averageHandlingTime,
+        private readonly int $averageWaitTime,
+        private readonly int $averageHandlingTime,
         private readonly int $totalSeconds,
     ) {
         $this->type = new Type($class);
@@ -42,12 +40,12 @@ final class MessageTypeMetric extends Metric
         return $this->type;
     }
 
-    public function averageWaitTime(): float
+    public function averageWaitTime(): int
     {
         return $this->averageWaitTime;
     }
 
-    public function averageHandlingTime(): float
+    public function averageHandlingTime(): int
     {
         return $this->averageHandlingTime;
     }

@@ -49,11 +49,13 @@ final class ViewHelper
         return $this->timeFormatter?->formatDiff($from) ?? $from->format('c');
     }
 
-    public function formatDuration(float $seconds): string
+    public function formatDuration(int $milliseconds): string
     {
-        if ($seconds < 1) {
-            return \sprintf('%d ms', $seconds * 1000);
+        if ($milliseconds < 1000) {
+            return \sprintf('%d ms', $milliseconds);
         }
+
+        $seconds = $milliseconds / 1000;
 
         if ($this->timeFormatter && \method_exists($this->timeFormatter, 'formatDuration')) {
             return $this->timeFormatter->formatDuration($seconds);
