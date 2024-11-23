@@ -22,4 +22,30 @@ final class DisableMonitoringStamp implements StampInterface
     public function __construct(public readonly bool $onlyWhenNoHandler = false)
     {
     }
+
+    /**
+     * @internal
+     *
+     * @param class-string $class
+     */
+    public static function getFor(string $class): ?self
+    {
+        $original = $reflection = new \ReflectionClass($class);
+
+        while (false !== $reflection) {
+            if ($attributes = $reflection->getAttributes(self::class)) {
+                return $attributes[0]->newInstance();
+            }
+
+            $reflection = $reflection->getParentClass();
+        }
+
+        foreach ($original->getInterfaces() as $refInterface) {
+            if ($attributes = $refInterface->getAttributes(self::class)) {
+                return $attributes[0]->newInstance();
+            }
+        }
+
+        return null;
+    }
 }

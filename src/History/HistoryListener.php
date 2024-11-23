@@ -117,31 +117,17 @@ final class HistoryListener
             }
         }
 
-        if ($stamp = $envelope->last(DisableMonitoringStamp::class)) {
-            if (false === $stamp->onlyWhenNoHandler) {
-                return true;
-            }
+        $stamp = $envelope->last(DisableMonitoringStamp::class) ?? DisableMonitoringStamp::getFor($messageClass);
 
-            return $this->hasNoHandlers($envelope);
+        if (!$stamp) {
+            return false;
         }
 
-        $reflection = new \ReflectionClass($messageClass);
-        $attributes = [];
-
-        while (false !== $reflection && [] === $attributes) {
-            $attributes = $reflection->getAttributes(DisableMonitoringStamp::class);
-            $reflection = $reflection->getParentClass();
+        if ($stamp->onlyWhenNoHandler && !$this->hasNoHandlers($envelope)) {
+            return false;
         }
 
-        if ([] !== $attributes) {
-            if (false === $attributes[0]->newInstance()->onlyWhenNoHandler) {
-                return true;
-            }
-
-            return $this->hasNoHandlers($envelope);
-        }
-
-        return false;
+        return true;
     }
 
     private function createResults(Envelope $envelope, ?HandlerFailedException $exception = null): Results

@@ -97,7 +97,7 @@ You may want to disable monitoring for certain messages. There are several ways 
 
     $bus->dispatch(new MyMessage(), [new DisableMonitoringStamp()])
     ```
-2. Add the `DisableMonitoringStamp` as a class attribute to your message (or parent class):
+2. Add the `DisableMonitoringStamp` as a class attribute to your message (or parent class/interface):
     ```php
     use Zenstruck\Messenger\Monitor\Stamp\DisableMonitoringStamp;
 

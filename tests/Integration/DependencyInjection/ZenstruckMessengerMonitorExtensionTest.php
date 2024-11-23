@@ -66,7 +66,7 @@ final class ZenstruckMessengerMonitorExtensionTest extends AbstractExtensionTest
     {
         $this->load(['storage' => [
             'orm' => ['entity_class' => ProcessedMessageImpl::class],
-            'exclude' => ['stdClass']
+            'exclude' => ['stdClass'],
         ]]);
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('.zenstruck_messenger_monitor.history.listener', 2, [\stdClass::class]);
@@ -80,7 +80,7 @@ final class ZenstruckMessengerMonitorExtensionTest extends AbstractExtensionTest
         $this->expectException(InvalidConfigurationException::class);
 
         $this->load(['storage' => [
-            'exclude' => ['invalid']
+            'exclude' => ['invalid'],
         ]]);
     }
 
