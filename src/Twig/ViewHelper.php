@@ -31,16 +31,34 @@ final class ViewHelper
     public function __construct(
         public readonly Transports $transports,
         public readonly Workers $workers,
-        public readonly ?Storage $storage,
+        private readonly ?Storage $storage,
         public readonly ?Schedules $schedules,
-        public readonly ?DateTimeFormatter $timeFormatter,
-        public readonly ?CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly ?DateTimeFormatter $timeFormatter,
+        private readonly ?CsrfTokenManagerInterface $csrfTokenManager,
     ) {
     }
 
-    public function canFormatDuration(): bool
+    public function storage(): Storage
     {
-        return $this->timeFormatter && \method_exists($this->timeFormatter, 'formatDuration');
+        return $this->storage ?? throw new \LogicException('Storage is not enabled.');
+    }
+
+    public function formatTime(\DateTimeInterface $from): string
+    {
+        return $this->timeFormatter?->formatDiff($from) ?? $from->format('c');
+    }
+
+    public function formatDuration(float $seconds): string
+    {
+        if ($seconds < 1) {
+            return \sprintf('%d ms', $seconds * 1000);
+        }
+
+        if (!$this->timeFormatter || !\method_exists($this->timeFormatter, 'formatDuration')) {
+            return \sprintf('%.3f s', $seconds);
+        }
+
+        return $this->timeFormatter->formatDuration($seconds);
     }
 
     public function generateCsrfToken(string ...$parts): string
