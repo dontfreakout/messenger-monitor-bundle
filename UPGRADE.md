@@ -46,3 +46,6 @@
 * `Snapshot::averageWaitTime()` now returns milliseconds instead of seconds.
 * `Snapshot::averageHandlingTime()` now returns milliseconds instead of seconds.
 * `Snapshot::averageProcessingTime()` now returns milliseconds instead of seconds.
+* The `results` column in the `processed_messages` table is now nullable. Create
+  a migration to capture this change. This is to allow for a future feature where
+  result processing/storage can be disabled.
