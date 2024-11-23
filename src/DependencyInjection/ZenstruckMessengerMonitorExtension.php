@@ -11,19 +11,16 @@
 
 namespace Zenstruck\Messenger\Monitor\DependencyInjection;
 
-use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Symfony\Component\Mailer\Event\MessageEvent;
 use Symfony\Component\Scheduler\Schedule;
 use Zenstruck\Messenger\Monitor\History\Model\ProcessedMessage;
-use Zenstruck\Messenger\Monitor\Twig\ViewHelper;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
