@@ -12,6 +12,7 @@
 namespace Zenstruck\Messenger\Monitor\Twig;
 
 use Knp\Bundle\TimeBundle\DateTimeFormatter;
+use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -48,17 +49,23 @@ final class ViewHelper
         return $this->timeFormatter?->formatDiff($from) ?? $from->format('c');
     }
 
-    public function formatDuration(float $seconds): string
+    public function formatDuration(int $milliseconds): string
     {
-        if ($seconds < 1) {
-            return \sprintf('%d ms', $seconds * 1000);
+        if ($milliseconds < 1000) {
+            return \sprintf('%d ms', $milliseconds);
         }
 
-        if (!$this->timeFormatter || !\method_exists($this->timeFormatter, 'formatDuration')) {
-            return \sprintf('%.3f s', $seconds);
+        $seconds = $milliseconds / 1000;
+
+        if ($this->timeFormatter && \method_exists($this->timeFormatter, 'formatDuration')) {
+            return $this->timeFormatter->formatDuration($seconds);
         }
 
-        return $this->timeFormatter->formatDuration($seconds);
+        if (\class_exists(Helper::class)) {
+            return Helper::formatTime($seconds);
+        }
+
+        return \sprintf('%.3f s', $seconds);
     }
 
     public function generateCsrfToken(string ...$parts): string

@@ -65,9 +65,9 @@ final class ProcessedMessageTest extends TestCase
         $this->assertSame([], $message->tags()->all());
         $this->assertSame([], $message->results()->all());
         $this->assertSame('foo', $message->transport());
-        $this->assertSame(1.0, $message->timeInQueue());
-        $this->assertSame(2.0, $message->timeToHandle());
-        $this->assertSame(3.0, $message->timeToProcess());
+        $this->assertSame(1000, $message->timeInQueue());
+        $this->assertSame(2000, $message->timeToHandle());
+        $this->assertSame(3000, $message->timeToProcess());
         $this->assertFalse($message->isFailure());
         $this->assertNull($message->failure());
         $this->assertTrue($message->memoryUsage()->isGreaterThan(0));
@@ -169,8 +169,8 @@ final class ProcessedMessageTest extends TestCase
         $this->assertEquals($start, $message->dispatchedAt());
         $this->assertEquals($start->modify('+1100 milliseconds'), $message->receivedAt());
         $this->assertEquals($start->modify('+3300 milliseconds'), $message->finishedAt());
-        $this->assertSame(1.1, $message->timeInQueue());
-        $this->assertSame(2.2, $message->timeToHandle());
-        $this->assertSame(3.3, \round($message->timeToProcess(), 1));
+        $this->assertSame(1100, $message->timeInQueue());
+        $this->assertSame(2200, $message->timeToHandle());
+        $this->assertSame(3300, $message->timeToProcess());
     }
 }

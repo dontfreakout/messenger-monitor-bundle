@@ -36,14 +36,14 @@ interface Storage
     public function delete(mixed $id): void;
 
     /**
-     * @return float|null In seconds
+     * @return int|null milliseconds
      */
-    public function averageWaitTime(Specification $specification): ?float;
+    public function averageWaitTime(Specification $specification): ?int;
 
     /**
-     * @return float|null In seconds
+     * @return int|null milliseconds
      */
-    public function averageHandlingTime(Specification $specification): ?float;
+    public function averageHandlingTime(Specification $specification): ?int;
 
     public function count(Specification $specification): int;
 

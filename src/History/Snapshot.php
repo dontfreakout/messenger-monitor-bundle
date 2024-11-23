@@ -20,12 +20,12 @@ use function Symfony\Component\Clock\now;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class Snapshot
+final class Snapshot extends Metric
 {
     private int $successCount;
     private int $failureCount;
-    private float $averageWaitTime;
-    private float $averageHandlingTime;
+    private int $averageWaitTime;
+    private int $averageHandlingTime;
     private int $totalSeconds;
 
     public function __construct(private Storage $storage, private Specification $specification)
@@ -68,62 +68,14 @@ final class Snapshot
         return $this->failureCount ??= $this->storage->count($this->specification->failures());
     }
 
-    public function failRate(): float
+    public function averageWaitTime(): int
     {
-        try {
-            return $this->failureCount() / $this->totalCount();
-        } catch (\DivisionByZeroError) {
-            return 0;
-        }
+        return $this->averageWaitTime ??= $this->storage->averageWaitTime($this->specification) ?? 0;
     }
 
-    /**
-     * @return float In seconds
-     */
-    public function averageWaitTime(): float
+    public function averageHandlingTime(): int
     {
-        return $this->averageWaitTime ??= $this->storage->averageWaitTime($this->specification) ?? 0.0;
-    }
-
-    /**
-     * @return float In seconds
-     */
-    public function averageHandlingTime(): float
-    {
-        return $this->averageHandlingTime ??= $this->storage->averageHandlingTime($this->specification) ?? 0.0;
-    }
-
-    /**
-     * @return float In seconds
-     */
-    public function averageProcessingTime(): float
-    {
-        return $this->averageWaitTime() + $this->averageHandlingTime();
-    }
-
-    /**
-     * @param positive-int $divisor Seconds
-     */
-    public function handledPer(int $divisor): float
-    {
-        $interval = $this->totalSeconds() / $divisor;
-
-        return $this->totalCount() / $interval;
-    }
-
-    public function handledPerMinute(): float
-    {
-        return $this->handledPer(60);
-    }
-
-    public function handledPerHour(): float
-    {
-        return $this->handledPer(60 * 60);
-    }
-
-    public function handledPerDay(): float
-    {
-        return $this->handledPer(60 * 60 * 24);
+        return $this->averageHandlingTime ??= $this->storage->averageHandlingTime($this->specification) ?? 0;
     }
 
     public function totalSeconds(): int

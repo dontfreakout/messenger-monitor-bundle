@@ -87,6 +87,10 @@
                         this.pauseTarget.classList.remove('d-none');
                     }
 
+                    if (this.hasRefreshTarget) {
+                        this.refreshTarget.classList.add('d-none');
+                    }
+
                     if (this.hasIndicatorTarget) {
                         this.indicatorTarget.classList.remove('d-none');
                     }
@@ -101,6 +105,10 @@
 
                     if (this.hasPauseTarget) {
                         this.pauseTarget.classList.add('d-none');
+                    }
+
+                    if (this.hasRefreshTarget) {
+                        this.refreshTarget.classList.remove('d-none');
                     }
 
                     if (this.hasIndicatorTarget) {
