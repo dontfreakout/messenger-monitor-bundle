@@ -71,7 +71,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ path('zenstruck_messenger_monitor_detail', {id: message.id}) }}" class="btn btn-sm btn-secondary d-inline-flex align-items-center message-details">
+                            <a href="{{ path('zenstruck_messenger_monitor_detail', {id: message.id}) }}" class="btn btn-sm btn-secondary d-inline-flex align-items-center" data-controller="message-details" data-action="message-details#click">
                                 <svg fill="currentcolor" height="1em" width="1em" class="me-2"><use xlink:href="#search-icon"/></svg>
                                 Details...
                             </a>

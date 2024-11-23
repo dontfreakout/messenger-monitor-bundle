@@ -1,19 +1,16 @@
 <div class="card position-relative"{{ attributes|default('') }}>
     {% if workers.running %}
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+        <span class="position-absolute z-3 top-0 start-100 translate-middle badge rounded-pill bg-success">
             {{ workers.count }} <span class="visually-hidden">workers running</span>
         </span>
     {% else %}
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        <span class="position-absolute z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger">
             0 <span class="visually-hidden">workers running</span>
         </span>
     {% endif %}
 
     <div class="card-header d-flex align-items-center justify-content-between">
         Worker Status
-        {% if live|default(false) %}
-            {{ include('@ZenstruckMessengerMonitor/components/_loading.html.twig') }}
-        {% endif %}
     </div>
 
     {% if workers.running %}

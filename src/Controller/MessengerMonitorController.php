@@ -266,4 +266,51 @@ abstract class MessengerMonitorController extends AbstractController
 
         return $this->redirectToRoute('zenstruck_messenger_monitor_schedule', ['name' => $name]);
     }
+
+    #[Route('/_workers', name: 'zenstruck_messenger_monitor_workers_widget')]
+    public function workersWidget(
+        ViewHelper $helper,
+    ): Response {
+        return $this->render('@ZenstruckMessengerMonitor/components/workers.html.twig', [
+            'workers' => $helper->workers,
+        ]);
+    }
+
+    #[Route('/_transports', name: 'zenstruck_messenger_monitor_transports_widget')]
+    public function transportsWidget(
+        ViewHelper $helper,
+    ): Response {
+        return $this->render('@ZenstruckMessengerMonitor/components/transports.html.twig', [
+            'transports' => $helper->transports,
+        ]);
+    }
+
+    #[Route('/_snapshot', name: 'zenstruck_messenger_monitor_snapshot_widget')]
+    public function snapshotWidget(
+        ViewHelper $helper,
+    ): Response {
+        if (!$helper->storage) {
+            throw new \LogicException('Storage must be configured to use the dashboard.');
+        }
+
+        return $this->render('@ZenstruckMessengerMonitor/components/snapshot.html.twig', [
+            'helper' => $helper,
+            'snapshot' => Specification::create(Period::IN_LAST_DAY)->snapshot($helper->storage),
+            'subtitle' => 'Last 24 Hours',
+        ]);
+    }
+
+    #[Route('/_recent-messages', name: 'zenstruck_messenger_monitor_recent_messages_widget')]
+    public function recentMessagesWidget(
+        ViewHelper $helper,
+    ): Response {
+        if (!$helper->storage) {
+            throw new \LogicException('Storage must be configured to use the dashboard.');
+        }
+
+        return $this->render('@ZenstruckMessengerMonitor/components/recent_messages.html.twig', [
+            'messages' => Specification::new()->snapshot($helper->storage)->messages(),
+            'helper' => $helper,
+        ]);
+    }
 }

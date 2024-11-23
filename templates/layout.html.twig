@@ -37,67 +37,142 @@
             .card-table tbody tr:last-child td:last-child {
                 border-bottom-right-radius: var(--bs-card-border-radius);
             }
+
+            .spinner-border-slow {
+                animation-duration: 1.5s;
+            }
         </style>
     {% endblock %}
 
     {% block javascripts %}
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/idiomorph@0.3.0/dist/idiomorph-ext.min.js"></script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('.message-details').forEach(element => {
-                    element.addEventListener('click', (event) => {
-                        event.preventDefault();
+        <script type="module">
+            import { Application, Controller } from "https://unpkg.com/@hotwired/stimulus/dist/stimulus.js"
+            window.Stimulus = Application.start()
 
-                        fetch(element.getAttribute('href'))
-                            .then(response => response.text())
-                            .then(html => {
-                                const modal = new bootstrap.Modal(document.getElementById('message-details-modal'));
-                                const modalContent = modal._element.querySelector('.modal-content');
+            Stimulus.register('refreshable', class extends Controller {
+                static values = {
+                    url: String,
+                    poll: {
+                        type: Number,
+                        default: 5000,
+                    },
+                    autorefresh: {
+                        type: Boolean,
+                        default: true,
+                    }
+                };
+                static targets = ['indicator', 'content', 'start', 'pause', 'refresh'];
 
-                                modalContent.innerHTML = html;
-                                modal.show();
-                            })
-                            .catch(error => console.error('Error:', error))
-                        ;
-                    });
-                });
+                interval;
 
-                document.querySelectorAll('.toast').forEach(element => {
-                    (new bootstrap.Toast(element)).show();
-                });
+                connect() {
+                    if (this.autorefreshValue) {
+                        this.start();
+                    }
+                }
 
-                document.querySelectorAll('.post-link').forEach(element => {
-                    element.addEventListener('click', (event) => {
-                        event.preventDefault();
+                start() {
+                    this.interval = setInterval(() => this.refresh(), this.pollValue);
 
-                        if (element.dataset.confirm && !confirm(element.dataset.confirm)) {
-                            return;
-                        }
+                    if (this.hasStartTarget) {
+                        this.startTarget.classList.add('d-none');
+                    }
 
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = element.getAttribute('href');
+                    if (this.hasPauseTarget) {
+                        this.pauseTarget.classList.remove('d-none');
+                    }
 
-                        if (element.dataset.token) {
-                            const token = document.createElement('input');
-                            token.type = 'hidden';
-                            token.name = '_token';
-                            token.value = element.dataset.token;
-                            form.appendChild(token);
-                        }
+                    if (this.hasIndicatorTarget) {
+                        this.indicatorTarget.classList.remove('d-none');
+                    }
+                }
 
-                        document.body.appendChild(form);
-                        form.submit();
-                    });
-                });
+                pause() {
+                    clearInterval(this.interval);
+
+                    if (this.hasStartTarget) {
+                        this.startTarget.classList.remove('d-none');
+                    }
+
+                    if (this.hasPauseTarget) {
+                        this.pauseTarget.classList.add('d-none');
+                    }
+
+                    if (this.hasIndicatorTarget) {
+                        this.indicatorTarget.classList.add('d-none');
+                    }
+                }
+
+                async refresh() {
+                    if (document.hidden) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(this.urlValue);
+                        const html = await response.text();
+
+                        Idiomorph.morph(this.contentTarget, html, { morphStyle: 'innerHTML'});
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            });
+
+            Stimulus.register('message-details', class extends Controller {
+                click(event) {
+                    event.preventDefault();
+
+                    fetch(this.element.getAttribute('href'))
+                        .then(response => response.text())
+                        .then(html => {
+                            const modal = new bootstrap.Modal(document.getElementById('message-details-modal'));
+                            const modalContent = modal._element.querySelector('.modal-content');
+
+                            modalContent.innerHTML = html;
+                            modal.show();
+                        })
+                        .catch(error => console.error('Error:', error))
+                    ;
+                }
+            });
+
+            Stimulus.register('toast', class extends Controller {
+                connect() {
+                    (new bootstrap.Toast(this.element)).show();
+                }
+            });
+
+            Stimulus.register('post-link', class extends Controller {
+                click(event) {
+                    event.preventDefault();
+
+                    if (this.element.dataset.confirm && !confirm(this.element.dataset.confirm)) {
+                        return;
+                    }
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = this.element.getAttribute('href');
+
+                    if (this.element.dataset.token) {
+                        const token = document.createElement('input');
+                        token.type = 'hidden';
+                        token.name = '_token';
+                        token.value = this.element.dataset.token;
+                        form.appendChild(token);
+                    }
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             });
         </script>
-
-        {% if helper.assetManager %}
-            {{ include('@ZenstruckMessengerMonitor/components/_%s.html.twig'|format(helper.assetManager)) }}
-        {% endif %}
     {% endblock %}
 </head>
 <body>
@@ -238,6 +313,9 @@
         <symbol id="play-icon" viewBox="0 0 16 16">
             <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
         </symbol>
+        <symbol id="pause-icon" viewBox="0 0 16 16">
+            <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/>
+        </symbol>
         <symbol id="refresh-icon" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -255,7 +333,7 @@
 {% for label, messages in app.flashes %}
     {% for message in messages %}
         <div class="toast-container position-fixed top-0 end-0 p-3 mt-2">
-            <div class="toast text-bg-{{ label }}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast text-bg-{{ label }}" role="alert" aria-live="assertive" aria-atomic="true" data-controller="toast">
                 <div class="d-flex">
                     <div class="toast-body">{{ message }}</div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
