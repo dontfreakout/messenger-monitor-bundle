@@ -87,7 +87,7 @@ or the [provided tools](#history).
 
 #### Disable Monitoring
 
-You may want to disable monitoring for certain messages. There are two ways to do this:
+You may want to disable monitoring for certain messages. There are several ways to do this:
 
 1. When dispatching the message, add the `DisableMonitoringStamp`:
     ```php
@@ -97,7 +97,7 @@ You may want to disable monitoring for certain messages. There are two ways to d
 
     $bus->dispatch(new MyMessage(), [new DisableMonitoringStamp()])
     ```
-2. Add the `DisableMonitoringStamp` as a class attribute to your message:
+2. Add the `DisableMonitoringStamp` as a class attribute to your message (or parent class):
     ```php
     use Zenstruck\Messenger\Monitor\Stamp\DisableMonitoringStamp;
 
@@ -106,8 +106,8 @@ You may want to disable monitoring for certain messages. There are two ways to d
     {
     }
     ```
-3. You may want to disable monitoring for messages that are dispatched without any handler.
-You can do this by using the `DisableMonitoringStamp` with optional constructor argument `true`:
+    You may want to disable monitoring for messages that are dispatched without any handler.
+    You can do this by using the `DisableMonitoringStamp` with optional constructor argument `true`:
     ```php
     use Zenstruck\Messenger\Monitor\Stamp\DisableMonitoringStamp;
 
@@ -115,6 +115,15 @@ You can do this by using the `DisableMonitoringStamp` with optional constructor 
     class MyMessage
     {
     }
+    ```
+3. Add the message class to the `exclude` config option (can be abstract/interface):
+    ```yaml
+    # config/packages/zenstruck_messenger_monitor.yaml
+
+    zenstruck_messenger_monitor:
+        storage:
+            exclude:
+                - App\Message\MyMessage
     ```
 
 #### Description
@@ -300,6 +309,8 @@ when@dev:
 ```yaml
 zenstruck_messenger_monitor:
     storage:
+        # Message classes to disable monitoring for (can be abstract/interface)
+        exclude:              []
         orm:
 
             # Your Doctrine entity class that extends "Zenstruck\Messenger\Monitor\History\Model\ProcessedMessage"

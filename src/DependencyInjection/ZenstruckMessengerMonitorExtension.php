@@ -35,6 +35,15 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
             ->children()
                 ->arrayNode('storage')
                     ->children()
+                        ->arrayNode('exclude')
+                            ->info('Message classes to disable monitoring for (can be abstract/interface)')
+                            ->scalarPrototype()
+                                ->validate()
+                                    ->ifTrue(fn($v) => !\class_exists($v) && !\interface_exists($v))
+                                    ->thenInvalid('Class/interface does not exist.')
+                                ->end()
+                            ->end()
+                        ->end()
                         ->arrayNode('orm')
                             ->children()
                                 ->scalarNode('entity_class')
@@ -91,7 +100,12 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
 
         if ($entity = $mergedConfig['storage']['orm']['entity_class'] ?? null) {
             $loader->load('storage_orm.php');
-            $container->getDefinition('zenstruck_messenger_monitor.history.storage')->setArgument(1, $entity);
+            $container->getDefinition('zenstruck_messenger_monitor.history.storage')
+                ->setArgument(1, $entity)
+            ;
+            $container->getDefinition('.zenstruck_messenger_monitor.history.listener')
+                ->setArgument(2, $mergedConfig['storage']['exclude'])
+            ;
 
             if (!\class_exists(Schedule::class)) {
                 $container->removeDefinition('.zenstruck_messenger_monitor.command.schedule_purge');

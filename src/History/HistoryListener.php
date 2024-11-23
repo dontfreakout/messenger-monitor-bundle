@@ -34,8 +34,14 @@ use Zenstruck\Messenger\Monitor\Stamp\TagStamp;
  */
 final class HistoryListener
 {
-    public function __construct(private Storage $storage, private ResultNormalizer $normalizer)
-    {
+    /**
+     * @param class-string[] $excludedClasses
+     */
+    public function __construct(
+        private Storage $storage,
+        private ResultNormalizer $normalizer,
+        private array $excludedClasses,
+    ) {
     }
 
     public function addMonitorStamp(SendMessageToTransportsEvent $event): void
@@ -103,6 +109,14 @@ final class HistoryListener
 
     private function isMonitoringDisabled(Envelope $envelope): bool
     {
+        $messageClass = $envelope->getMessage()::class;
+
+        foreach ($this->excludedClasses as $excludedClass) {
+            if (\is_a($messageClass, $excludedClass, true)) {
+                return true;
+            }
+        }
+
         if ($stamp = $envelope->last(DisableMonitoringStamp::class)) {
             if (false === $stamp->onlyWhenNoHandler) {
                 return true;
@@ -111,7 +125,7 @@ final class HistoryListener
             return $this->hasNoHandlers($envelope);
         }
 
-        $reflection = new \ReflectionClass($envelope->getMessage());
+        $reflection = new \ReflectionClass($messageClass);
         $attributes = [];
 
         while (false !== $reflection && [] === $attributes) {
