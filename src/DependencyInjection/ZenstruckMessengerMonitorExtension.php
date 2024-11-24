@@ -103,8 +103,8 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
             $container->getDefinition('zenstruck_messenger_monitor.history.storage')
                 ->setArgument(1, $entity)
             ;
-            $container->getDefinition('.zenstruck_messenger_monitor.history.listener')
-                ->setArgument(2, $mergedConfig['storage']['exclude'])
+            $container->getDefinition('.zenstruck_messenger_monitor.listener.receive_monitor_stamp')
+                ->setArgument(0, $mergedConfig['storage']['exclude'])
             ;
 
             if (!\class_exists(Schedule::class)) {

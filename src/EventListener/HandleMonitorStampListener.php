@@ -9,66 +9,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\History;
+namespace Zenstruck\Messenger\Monitor\EventListener;
 
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Event\SendMessageToTransportsEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
-use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
-use Symfony\Component\Scheduler\Messenger\ScheduledStamp;
-use Zenstruck\Messenger\Monitor\History\Model\Result;
 use Zenstruck\Messenger\Monitor\History\Model\Results;
-use Zenstruck\Messenger\Monitor\Stamp\DisableMonitoringStamp;
+use Zenstruck\Messenger\Monitor\History\ResultNormalizer;
+use Zenstruck\Messenger\Monitor\History\Storage;
 use Zenstruck\Messenger\Monitor\Stamp\MonitorStamp;
-use Zenstruck\Messenger\Monitor\Stamp\TagStamp;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @internal
- *
- * @phpstan-import-type Structure from Result
  */
-final class HistoryListener
+final class HandleMonitorStampListener
 {
-    /**
-     * @param class-string[] $excludedClasses
-     */
     public function __construct(
         private Storage $storage,
         private ResultNormalizer $normalizer,
-        private array $excludedClasses,
     ) {
-    }
-
-    public function addMonitorStamp(SendMessageToTransportsEvent $event): void
-    {
-        $event->setEnvelope($event->getEnvelope()->with(new MonitorStamp()));
-    }
-
-    public function receiveMessage(WorkerMessageReceivedEvent $event): void
-    {
-        $envelope = $event->getEnvelope();
-
-        if ($this->isMonitoringDisabled($envelope)) {
-            return;
-        }
-
-        $stamp = $envelope->last(MonitorStamp::class);
-
-        if (\class_exists(ScheduledStamp::class) && $scheduledStamp = $envelope->last(ScheduledStamp::class)) {
-            // scheduler transport doesn't trigger SendMessageToTransportsEvent
-            $stamp = new MonitorStamp($scheduledStamp->messageContext->triggeredAt);
-
-            $event->addStamps(TagStamp::forSchedule($scheduledStamp));
-        }
-
-        if ($stamp instanceof MonitorStamp) {
-            $event->addStamps($stamp->markReceived($event->getReceiverName()));
-        }
     }
 
     public function handleSuccess(WorkerMessageHandledEvent $event): void
@@ -107,29 +70,6 @@ final class HistoryListener
         );
     }
 
-    private function isMonitoringDisabled(Envelope $envelope): bool
-    {
-        $messageClass = $envelope->getMessage()::class;
-
-        foreach ($this->excludedClasses as $excludedClass) {
-            if (\is_a($messageClass, $excludedClass, true)) {
-                return true;
-            }
-        }
-
-        $stamp = $envelope->last(DisableMonitoringStamp::class) ?? DisableMonitoringStamp::getFor($messageClass);
-
-        if (!$stamp) {
-            return false;
-        }
-
-        if ($stamp->onlyWhenNoHandler && !$this->hasNoHandlers($envelope)) {
-            return false;
-        }
-
-        return true;
-    }
-
     private function createResults(Envelope $envelope, ?HandlerFailedException $exception = null): Results
     {
         $results = [];
@@ -156,10 +96,5 @@ final class HistoryListener
         }
 
         return new Results($results);
-    }
-
-    private function hasNoHandlers(Envelope $envelope): bool
-    {
-        return [] === $envelope->all(HandledStamp::class);
     }
 }

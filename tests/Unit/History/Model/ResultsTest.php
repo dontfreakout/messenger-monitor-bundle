@@ -30,6 +30,6 @@ final class ResultsTest extends TestCase
         $this->assertSame([], $results->all());
         $this->assertSame([], $results->successes());
         $this->assertSame([], $results->failures());
-        $this->assertSame(null, $results->jsonSerialize());
+        $this->assertNull($results->jsonSerialize());
     }
 }
