@@ -20,7 +20,14 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Foundry\ZenstruckFoundryBundle;
 use Zenstruck\Messenger\Monitor\Tests\Fixture\Entity\ProcessedMessage;
+use Zenstruck\Messenger\Monitor\Tests\Fixture\Message\MessageA;
+use Zenstruck\Messenger\Monitor\Tests\Fixture\Message\MessageAHandler;
+use Zenstruck\Messenger\Monitor\Tests\Fixture\Message\MessageB;
+use Zenstruck\Messenger\Monitor\Tests\Fixture\Message\MessageC;
+use Zenstruck\Messenger\Monitor\Tests\Fixture\Message\MessageCHandler1;
+use Zenstruck\Messenger\Monitor\Tests\Fixture\Message\MessageCHandler2;
 use Zenstruck\Messenger\Monitor\ZenstruckMessengerMonitorBundle;
+use Zenstruck\Messenger\Test\ZenstruckMessengerTestBundle;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -33,6 +40,7 @@ final class TestKernel extends Kernel
     {
         yield new FrameworkBundle();
         yield new DoctrineBundle();
+        yield new ZenstruckMessengerTestBundle();
         yield new ZenstruckFoundryBundle();
         yield new ZenstruckMessengerMonitorBundle();
     }
@@ -47,7 +55,12 @@ final class TestKernel extends Kernel
             'serializer' => true,
             'messenger' => [
                 'transports' => [
-                    'async' => 'in-memory://',
+                    'async' => 'test://',
+                ],
+                'routing' => [
+                    MessageA::class => 'async',
+                    MessageB::class => 'async',
+                    MessageC::class => 'async',
                 ],
             ],
         ]);
@@ -78,6 +91,9 @@ final class TestKernel extends Kernel
         ]);
 
         $c->register(TestService::class)->setAutowired(true)->setPublic(true);
+        $c->register(MessageAHandler::class)->setAutowired(true)->setAutoconfigured(true);
+        $c->register(MessageCHandler1::class)->setAutowired(true)->setAutoconfigured(true);
+        $c->register(MessageCHandler2::class)->setAutowired(true)->setAutoconfigured(true);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void

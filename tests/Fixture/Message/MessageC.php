@@ -14,10 +14,11 @@ namespace Zenstruck\Messenger\Monitor\Tests\Fixture\Message;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class MessageA
+final class MessageC
 {
     public function __construct(
-        public readonly mixed $return = null,
+        public readonly mixed $return1 = null,
+        public readonly mixed $return2 = null,
         public readonly bool $throw = false,
     ) {
     }
