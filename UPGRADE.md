@@ -2,6 +2,9 @@
 
 ## 0.5.0
 
+* The Live Components were removed. If you enabled them in your config,
+  you will need to remove the `zenstruck_messenger_monitor.live_components`
+  entry.
 * Two new `bigint` columns were added to the `processed_messages` table:
   `wait_time` and `handle_time`. These are milliseconds. You will need to
   create a migration to add these columns to your database. They are not
