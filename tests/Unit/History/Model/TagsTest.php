@@ -87,7 +87,7 @@ final class TagsTest extends TestCase
             new TagStamp('qux'),
         ]);
 
-        $this->assertSame(['from', 'attribute', 'bar', 'foo', 'baz', 'qux'], (new Tags($envelope))->all());
+        $this->assertSame(['foo', 'bar', 'baz', 'qux', 'from', 'attribute', 'abstract', 'interface'], (new Tags($envelope))->all());
     }
 
     /**
@@ -104,9 +104,19 @@ final class TagsTest extends TestCase
     }
 }
 
+#[TagStamp('interface')]
+interface InterfaceMessage
+{
+}
+
+#[TagStamp('abstract')]
+abstract class AbstractMessage implements InterfaceMessage
+{
+}
+
 #[TagStamp('from')]
 #[TagStamp('attribute')]
 #[TagStamp('bar')]
-class TestMessage
+class TestMessage extends AbstractMessage
 {
 }

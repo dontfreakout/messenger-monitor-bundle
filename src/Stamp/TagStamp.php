@@ -11,7 +11,6 @@
 
 namespace Zenstruck\Messenger\Monitor\Stamp;
 
-use Symfony\Component\Messenger\Stamp\StampInterface;
 use Symfony\Component\Scheduler\Messenger\ScheduledStamp;
 use Zenstruck\Messenger\Monitor\Schedule\TaskInfo;
 
@@ -19,7 +18,7 @@ use Zenstruck\Messenger\Monitor\Schedule\TaskInfo;
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
-final class TagStamp implements StampInterface, \Stringable
+final class TagStamp extends AttributeStamp implements \Stringable
 {
     public function __construct(
         public readonly string $value,

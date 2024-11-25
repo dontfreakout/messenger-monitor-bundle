@@ -154,7 +154,7 @@ add your own in one of two ways:
 
     $bus->dispatch(new MyMessage(), [new TagStamp('tag-1'), new TagStamp('tag-2')])
     ```
-2. Add the `TagStamp` as a class attribute to your message:
+2. Add the `TagStamp` as a class attribute to your message (and parent class/interface):
     ```php
     use Zenstruck\Messenger\Monitor\Stamp\TagStamp;
 
@@ -164,6 +164,8 @@ add your own in one of two ways:
     {
     }
     ```
+    > [!TIP]
+    > You can also add the `TagStamp` attribute to parent classes/interfaces.
 
 #### `messenger:monitor:purge` Command
 

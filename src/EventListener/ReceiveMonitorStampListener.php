@@ -65,9 +65,7 @@ final class ReceiveMonitorStampListener
             }
         }
 
-        $stamp = $envelope->last(DisableMonitoringStamp::class) ?? DisableMonitoringStamp::getFor($messageClass);
-
-        if (!$stamp) {
+        if (!$stamp = DisableMonitoringStamp::firstFrom($envelope)) {
             return false;
         }
 

@@ -100,12 +100,8 @@ final class Tags implements \IteratorAggregate, \Countable, \Stringable
      */
     private static function parseFrom(Envelope $envelope): \Traversable
     {
-        foreach ((new \ReflectionClass($envelope->getMessage()))->getAttributes(TagStamp::class) as $attribute) {
-            yield $attribute->newInstance()->value;
-        }
-
-        foreach ($envelope->all(TagStamp::class) as $tag) {
-            yield $tag->value; // @phpstan-ignore-line
+        foreach (TagStamp::from($envelope) as $tag) {
+            yield $tag->value;
         }
     }
 }
