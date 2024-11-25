@@ -33,7 +33,6 @@ abstract class AttributeStamp implements StampInterface
         $original = $reflection = new \ReflectionClass($envelope->getMessage());
 
         while (false !== $reflection) {
-
             foreach ($reflection->getAttributes(static::class) as $attribute) {
                 yield $attribute->newInstance();
             }
