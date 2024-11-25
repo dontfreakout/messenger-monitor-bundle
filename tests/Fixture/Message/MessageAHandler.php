@@ -11,14 +11,20 @@
 
 namespace Zenstruck\Messenger\Monitor\Tests\Fixture\Message;
 
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class MessageA
+#[AsMessageHandler]
+final class MessageAHandler
 {
-    public function __construct(
-        public readonly mixed $return = null,
-        public readonly bool $throw = false,
-    ) {
+    public function __invoke(MessageA $message): mixed
+    {
+        if ($message->throw) {
+            throw new \RuntimeException('error');
+        }
+
+        return $message->return;
     }
 }

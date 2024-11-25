@@ -11,13 +11,11 @@
 
 namespace Zenstruck\Messenger\Monitor\Stamp;
 
-use Symfony\Component\Messenger\Stamp\StampInterface;
-
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
-final class DisableMonitoringStamp implements StampInterface
+final class DisableMonitoringStamp extends AttributeStamp
 {
     public function __construct(public readonly bool $onlyWhenNoHandler = false)
     {

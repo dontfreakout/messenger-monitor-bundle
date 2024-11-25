@@ -8,7 +8,9 @@ use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Zenstruck\Messenger\Monitor\Command\PurgeCommand;
 use Zenstruck\Messenger\Monitor\Command\SchedulePurgeCommand;
-use Zenstruck\Messenger\Monitor\History\HistoryListener;
+use Zenstruck\Messenger\Monitor\EventListener\AddMonitorStampListener;
+use Zenstruck\Messenger\Monitor\EventListener\HandleMonitorStampListener;
+use Zenstruck\Messenger\Monitor\EventListener\ReceiveMonitorStampListener;
 use Zenstruck\Messenger\Monitor\History\ResultNormalizer;
 use Zenstruck\Messenger\Monitor\History\Storage;
 use Zenstruck\Messenger\Monitor\History\Storage\ORMStorage;
@@ -29,13 +31,20 @@ return static function (ContainerConfigurator $container): void {
         ->set('.zenstruck_messenger_monitor.history.result_normalizer', ResultNormalizer::class)
             ->args([param('kernel.project_dir')])
 
-        ->set('.zenstruck_messenger_monitor.history.listener', HistoryListener::class)
+        ->set('.zenstruck_messenger_monitor.listener.add_monitor_stamp', AddMonitorStampListener::class)
+            ->tag('kernel.event_listener', ['method' => '__invoke', 'event' => SendMessageToTransportsEvent::class])
+
+        ->set('.zenstruck_messenger_monitor.listener.receive_monitor_stamp', ReceiveMonitorStampListener::class)
+            ->args([
+                abstract_arg('exclude_classes')
+            ])
+            ->tag('kernel.event_listener', ['method' => '__invoke', 'event' => WorkerMessageReceivedEvent::class])
+
+        ->set('.zenstruck_messenger_monitor.listener.handle_monitor_stamp', HandleMonitorStampListener::class)
             ->args([
                 service('zenstruck_messenger_monitor.history.storage'),
                 service('.zenstruck_messenger_monitor.history.result_normalizer'),
             ])
-            ->tag('kernel.event_listener', ['method' => 'addMonitorStamp', 'event' => SendMessageToTransportsEvent::class])
-            ->tag('kernel.event_listener', ['method' => 'receiveMessage', 'event' => WorkerMessageReceivedEvent::class])
             ->tag('kernel.event_listener', ['method' => 'handleSuccess', 'event' => WorkerMessageHandledEvent::class])
             ->tag('kernel.event_listener', ['method' => 'handleFailure', 'event' => WorkerMessageFailedEvent::class])
 

@@ -26,9 +26,9 @@ final class Results implements \Countable, \IteratorAggregate, \JsonSerializable
     /**
      * @internal
      *
-     * @param Structure[] $data
+     * @param Structure[]|null $data
      */
-    public function __construct(private array $data)
+    public function __construct(private ?array $data)
     {
     }
 
@@ -37,7 +37,7 @@ final class Results implements \Countable, \IteratorAggregate, \JsonSerializable
      */
     public function all(): array
     {
-        return $this->all ??= \array_map(static fn(array $result) => new Result($result), $this->data);
+        return $this->all ??= \array_map(static fn(array $result) => new Result($result), $this->data ?? []);
     }
 
     /**
@@ -63,13 +63,13 @@ final class Results implements \Countable, \IteratorAggregate, \JsonSerializable
 
     public function count(): int
     {
-        return \count($this->data);
+        return \count($this->all());
     }
 
     /**
-     * @return Structure[]
+     * @return Structure[]|null
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): ?array
     {
         return $this->data;
     }

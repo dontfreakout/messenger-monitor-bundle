@@ -13,9 +13,13 @@ namespace Zenstruck\Messenger\Monitor\Tests\Integration\DependencyInjection;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\ContainerBuilderHasAliasConstraint;
+use Matthias\SymfonyDependencyInjectionTest\PhpUnit\ContainerBuilderHasServiceDefinitionConstraint;
 use PHPUnit\Framework\Constraint\LogicalNot;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Zenstruck\Messenger\Monitor\DependencyInjection\ZenstruckMessengerMonitorExtension;
+use Zenstruck\Messenger\Monitor\EventListener\AddMonitorStampListener;
+use Zenstruck\Messenger\Monitor\EventListener\HandleMonitorStampListener;
+use Zenstruck\Messenger\Monitor\EventListener\ReceiveMonitorStampListener;
 use Zenstruck\Messenger\Monitor\History\Model\ProcessedMessage;
 use Zenstruck\Messenger\Monitor\History\Storage;
 use Zenstruck\Messenger\Monitor\History\Storage\ORMStorage;
@@ -38,6 +42,9 @@ final class ZenstruckMessengerMonitorExtensionTest extends AbstractExtensionTest
         $this->assertContainerBuilderHasAlias(Transports::class, 'zenstruck_messenger_monitor.transports');
         $this->assertContainerBuilderHasAlias(Workers::class, 'zenstruck_messenger_monitor.workers');
         $this->assertThat($this->container, new LogicalNot(new ContainerBuilderHasAliasConstraint(Storage::class)));
+        $this->assertThat($this->container, new LogicalNot(new ContainerBuilderHasServiceDefinitionConstraint('.zenstruck_messenger_monitor.listener.add_monitor_stamp')));
+        $this->assertThat($this->container, new LogicalNot(new ContainerBuilderHasServiceDefinitionConstraint('.zenstruck_messenger_monitor.listener.receive_monitor_stamp')));
+        $this->assertThat($this->container, new LogicalNot(new ContainerBuilderHasServiceDefinitionConstraint('.zenstruck_messenger_monitor.listener.handle_monitor_stamp')));
     }
 
     /**
@@ -52,6 +59,35 @@ final class ZenstruckMessengerMonitorExtensionTest extends AbstractExtensionTest
         $this->assertContainerBuilderHasService('zenstruck_messenger_monitor.history.storage', ORMStorage::class);
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('zenstruck_messenger_monitor.history.storage', 1, ProcessedMessageImpl::class);
         $this->assertContainerBuilderHasAlias(Storage::class, 'zenstruck_messenger_monitor.history.storage');
+        $this->assertContainerBuilderHasService('.zenstruck_messenger_monitor.listener.add_monitor_stamp', AddMonitorStampListener::class);
+        $this->assertContainerBuilderHasService('.zenstruck_messenger_monitor.listener.receive_monitor_stamp', ReceiveMonitorStampListener::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument('.zenstruck_messenger_monitor.listener.receive_monitor_stamp', 0, []);
+        $this->assertContainerBuilderHasService('.zenstruck_messenger_monitor.listener.handle_monitor_stamp', HandleMonitorStampListener::class);
+    }
+
+    /**
+     * @test
+     */
+    public function storage_with_excluded_classes(): void
+    {
+        $this->load(['storage' => [
+            'orm' => ['entity_class' => ProcessedMessageImpl::class],
+            'exclude' => ['stdClass'],
+        ]]);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument('.zenstruck_messenger_monitor.listener.receive_monitor_stamp', 0, [\stdClass::class]);
+    }
+
+    /**
+     * @test
+     */
+    public function invalid_exclude_class(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->load(['storage' => [
+            'exclude' => ['invalid'],
+        ]]);
     }
 
     /**

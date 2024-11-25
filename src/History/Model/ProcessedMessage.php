@@ -44,8 +44,8 @@ abstract class ProcessedMessage
     private ?string $failureType = null;
     private ?string $failureMessage = null;
 
-    /** @var Structure[]|Results */
-    private array|Results $results;
+    /** @var Structure[]|Results|null */
+    private array|Results|null $results;
 
     public function __construct(Envelope $envelope, Results $results, ?\Throwable $exception = null)
     {
