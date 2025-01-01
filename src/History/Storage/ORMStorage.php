@@ -72,16 +72,14 @@ final class ORMStorage implements Storage
         $totalSeconds = $specification->snapshot($this)->totalSeconds();
 
         return (new EntityResult($qb))
-            ->as(function(array $data) use ($totalSeconds) {
-                return new MessageTypeMetric(
-                    $data['type'],
-                    $data['total_count'],
-                    $data['failure_count'],
-                    (int) $data['avg_wait_time'],
-                    (int) $data['avg_handling_time'],
-                    $totalSeconds,
-                );
-            })
+            ->as(fn(array $data) => new MessageTypeMetric(
+                $data['type'],
+                $data['total_count'],
+                $data['failure_count'],
+                (int) $data['avg_wait_time'],
+                (int) $data['avg_handling_time'],
+                $totalSeconds,
+            ))
         ;
     }
 
