@@ -54,7 +54,22 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
                                     ->end()
                                 ->end()
                             ->end()
-                        ->end()
+                        ->end() // orm
+                        ->arrayNode('elastica')
+                            ->children()
+                                ->scalarNode('entity_class')
+                                    ->info(\sprintf('Your Elastica entity class that extends "%s"', ProcessedMessage::class))
+                                    ->validate()
+                                        ->ifTrue(fn($v) => ProcessedMessage::class === $v || !\is_a($v, ProcessedMessage::class, true))
+                                        ->thenInvalid(\sprintf('Your Elastica entity class must extend "%s"', ProcessedMessage::class))
+                                    ->end()
+                                ->end()
+                                ->scalarNode('index_name')
+                                    ->info('Elasticsearch index name.')
+                                    ->defaultValue('messenger_monitor')
+                                ->end()
+                            ->end()
+                        ->end() // elastica
                     ->end()
                 ->end()
                 ->arrayNode('cache')
@@ -98,15 +113,29 @@ final class ZenstruckMessengerMonitorExtension extends ConfigurableExtension imp
             $loader->load('mailer.php');
         }
 
-        if ($entity = $mergedConfig['storage']['orm']['entity_class'] ?? null) {
+        $ormEntity = $mergedConfig['storage']['orm']['entity_class'] ?? null;
+        $elasticaEntity = $mergedConfig['storage']['elastica']['entity_class'] ?? null;
+
+        if ($ormEntity && $elasticaEntity) {
+            throw new \InvalidArgumentException('You cannot configure both ORM and Elastica storage. Please choose one.');
+        }
+
+        if ($ormEntity) {
             $loader->load('storage_orm.php');
             $container->getDefinition('zenstruck_messenger_monitor.history.storage')
-                ->setArgument(1, $entity)
-            ;
+                ->setArgument(1, $ormEntity);
             $container->getDefinition('.zenstruck_messenger_monitor.listener.receive_monitor_stamp')
-                ->setArgument(0, $mergedConfig['storage']['exclude'])
-            ;
-
+                ->setArgument(0, $mergedConfig['storage']['exclude']);
+            if (!\class_exists(Schedule::class)) {
+                $container->removeDefinition('.zenstruck_messenger_monitor.command.schedule_purge');
+            }
+        } elseif ($elasticaEntity) {
+            $loader->load('storage_elastica.php');
+            $container->getDefinition('zenstruck_messenger_monitor.history.storage')
+                ->setArgument(1, $mergedConfig['storage']['elastica']['index_name'])
+                ->setArgument(2, $elasticaEntity);
+            $container->getDefinition('.zenstruck_messenger_monitor.listener.receive_monitor_stamp')
+                ->setArgument(0, $mergedConfig['storage']['exclude']);
             if (!\class_exists(Schedule::class)) {
                 $container->removeDefinition('.zenstruck_messenger_monitor.command.schedule_purge');
             }
