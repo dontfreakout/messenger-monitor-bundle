@@ -11,7 +11,7 @@ composer:
 	 composer $(TARGET)
 
 phpstan:
-	docker run -it --rm --name messenger-monitor-bundle -v $$PWD:/usr/src/myapp:z -w /usr/src/myapp php:$(PHP_VERSION) php vendor/bin/phpstan
+	docker run -it --rm --name messenger-monitor-bundle -v $$PWD:/usr/src/myapp:z -w /usr/src/myapp php:$(PHP_VERSION) php vendor/bin/phpstan --memory-limit=1G analyse
 
 test:
 	docker run -it --rm --name messenger-monitor-bundle -v $$PWD:/usr/src/myapp:z -w /usr/src/myapp php:$(PHP_VERSION) php vendor/bin/phpunit
