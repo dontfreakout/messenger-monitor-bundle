@@ -64,5 +64,4 @@ return static function (ContainerConfigurator $container): void {
             ->tag('serializer.normalizer')
             ->tag('serializer.denormalizer')
         ;
-    ;
 };
