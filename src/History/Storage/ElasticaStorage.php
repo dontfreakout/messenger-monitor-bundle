@@ -29,9 +29,9 @@ use Zenstruck\Collection\ArrayCollection;
 use Zenstruck\Messenger\Monitor\History\Model\MessageTypeMetric;
 use Zenstruck\Messenger\Monitor\History\Model\ProcessedMessage;
 use Zenstruck\Messenger\Monitor\History\Model\Results;
-use Zenstruck\Messenger\Monitor\History\Serializer\ProcessedMessageSerializer;
 use Zenstruck\Messenger\Monitor\History\Specification;
 use Zenstruck\Messenger\Monitor\History\Storage;
+use Zenstruck\Messenger\Monitor\Serializer\ProcessedMessageSerializer;
 
 /**
  * Storage adapter for Elasticsearch using ruflin/Elastica.
@@ -45,6 +45,9 @@ use Zenstruck\Messenger\Monitor\History\Storage;
  */
 final class ElasticaStorage implements Storage
 {
+    public const HANDLE_TIME_FIELD = 'timeToHandle';
+    public const WAIT_TIME_FIELD = 'timeInQueue';
+
     /** @var \Elastica\Index */
     private $index;
 
@@ -135,7 +138,7 @@ final class ElasticaStorage implements Storage
         $query->setSize(0);
 
         $avgAgg = new Avg('avg_wait_time');
-        $avgAgg->setField('waitTime');
+        $avgAgg->setField(self::WAIT_TIME_FIELD);
         $query->addAggregation($avgAgg);
 
         $resultSet = $this->index->search($query);
@@ -157,7 +160,7 @@ final class ElasticaStorage implements Storage
         $query->setSize(0);
 
         $avgAgg = new Avg('avg_handling_time');
-        $avgAgg->setField('handleTime');
+        $avgAgg->setField(self::HANDLE_TIME_FIELD);
         $query->addAggregation($avgAgg);
 
         $resultSet = $this->index->search($query);
@@ -191,23 +194,23 @@ final class ElasticaStorage implements Storage
         $query->setSize(0);
 
         $termsAgg = new Terms('by_type');
-        $termsAgg->setField('type.keyword');
+        $termsAgg->setField('type');
         $termsAgg->setSize(1000);
 
         // Create a filter aggregation for failure_count.
         $filterAgg = new AggFilter('failure_count');
         $existsQuery = new Exists('failureType');
-        $filterAgg->setParam('query', $existsQuery->toArray());
+        $filterAgg->setParam('filter', $existsQuery);
         $termsAgg->addAggregation($filterAgg);
 
         // Sub-aggregation for average wait time.
         $avgWaitAgg = new Avg('avg_wait_time');
-        $avgWaitAgg->setField('waitTime');
+        $avgWaitAgg->setField(self::WAIT_TIME_FIELD);
         $termsAgg->addAggregation($avgWaitAgg);
 
         // Sub-aggregation for average handling time.
         $avgHandlingAgg = new Avg('avg_handling_time');
-        $avgHandlingAgg->setField('handleTime');
+        $avgHandlingAgg->setField(self::HANDLE_TIME_FIELD);
         $termsAgg->addAggregation($avgHandlingAgg);
 
         $query->addAggregation($termsAgg);
@@ -241,7 +244,7 @@ final class ElasticaStorage implements Storage
         $query->setSize(0);
 
         $termsAgg = new Terms('types');
-        $termsAgg->setField('type.keyword');
+        $termsAgg->setField('type');
         $termsAgg->setSize(1000);
         $termsAgg->setOrder('_key', 'asc');
         $query->addAggregation($termsAgg);
@@ -295,12 +298,12 @@ final class ElasticaStorage implements Storage
         }
         if ($messageType) {
             $termQuery = new Term();
-            $termQuery->setTerm('type.keyword', $messageType);
+            $termQuery->setTerm('type', $messageType);
             $boolQuery->addFilter($termQuery);
         }
         if ($transport) {
             $termQuery = new Term();
-            $termQuery->setTerm('transport.keyword', $transport);
+            $termQuery->setTerm('transport', $transport);
             $boolQuery->addFilter($termQuery);
         }
         if ($runId) {

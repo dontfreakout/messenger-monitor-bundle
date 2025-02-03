@@ -63,7 +63,7 @@ final class ElasticaIndexManager
                         'handleTime' => ['type' => 'integer'],
                         'failureType' => ['type' => 'keyword'],
                         'failureMessage' => ['type' => 'text'],
-                        'results' => ['type' => 'object', 'dynamic' => true],
+                        'results' => ['type' => 'text'],
                     ],
                 ],
             ]);

@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Messenger\Monitor\History\Serializer;
+namespace Zenstruck\Messenger\Monitor\Serializer;
 
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Zenstruck\Messenger\Monitor\History\Model\ProcessedMessage;
+use Zenstruck\Messenger\Monitor\Serializer\Normalizer\ProcessedMessageNormalizer;
 
 final class ProcessedMessageSerializer
 {
@@ -48,7 +48,6 @@ final class ProcessedMessageSerializer
     {
         /** @var ProcessedMessage $object */
         $object = self::getSerializer()->denormalize($data, $entityClass);
-        // If the object supports setting its ID, then set it.
         if ($object instanceof $entityClass && \method_exists($object, 'setId')) {
             $object->setId($id);
         }
@@ -60,7 +59,7 @@ final class ProcessedMessageSerializer
     {
         if (null === self::$serializer) {
             self::$serializer = new Serializer(
-                [new ObjectNormalizer()],
+                [new ProcessedMessageNormalizer()],
                 [new JsonEncoder()]
             );
         }
